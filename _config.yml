@@ -3,10 +3,10 @@ title: 张俊峰
 subtitle: 个人站
 description: 欢迎来到我的个人站~
 # 头像里面的标题
-avatarTitle: leopardpan
+avatarTitle: zhangjf23
 # 头像里面的描述
 avatarDesc: 图像处理 / 自然语言处理
-url: "http://baixin.io"
+url: "http://zhangjf23.github.io"
 
 # Comment
 comment:
@@ -17,24 +17,13 @@ comment:
 # Social
 social:
     weibo: 5366874726 
-    github: leopardpan
+    github: zhangjf23
     # zhihu: panpanleopard
     # juejin: xxx
     jianshu: 2ada30d8d0f7
     # twitter: 
-    mail: leopardpan@icloud.com
+    mail: 18819461514@gmail.com
 
-
-# 百度统计 
-# 使用博客模板请去掉或者更换 id 
-baidu:
-    id: xxxx  
-
-# Google Analytics
-# 使用博客模板请去掉或者更换 id
-ga:
-    id: xxxx  
-    host: auto  
 
 
 # 《----------------- 上面的信息修改成你自己的 ---------------------------》
