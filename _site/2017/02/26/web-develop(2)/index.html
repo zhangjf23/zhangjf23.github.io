@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="@wblearn,不要让任何事情成为你不去学习的理由！">
+    <meta name="keywords"  content="wblearn, @wblearn, wblearn的博客,wblearn Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    
+    <title>我的Web开发实战总结(二) - Wblearn的博客 | Wblearn Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/avatar-wb.jpg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/2017/02/26/web-develop(2)/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+	
+	<!-- videos CSS -->
+    <link rel="stylesheet" href="/css/videos.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Wblearn Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/videos/">Videos</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-2015.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post-bg-2015.jpg')
+    }
+
+    
+</style>
+<header class="intro-header" >
+    <div class="header-mask"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#Web" title="Web">Web</a>
+                        
+                    </div>
+                    <h1>我的Web开发实战总结(二)</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by wblearn on February 26, 2017</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<div data-note-content="" class="show-content">
+          <h1>写在前面</h1>
+<p>这篇是继<a href="http://www.jianshu.com/p/185fd6942e7b" target="_blank">我的Web开发实战总结(一)</a>的第二篇文章，在此篇里，我主要总结一下如何把Web页面上的报表或列表数据转换成pdf文件下载到本地。其中涉及到的知识我也会提出来供大家交流学习。ok，开始吧~</p>
+<h1>先来看看效果</h1>
+<div class="image-package">
+<img src="http://upload-images.jianshu.io/upload_images/2556999-d4f04ff0f1b3e564.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/2556999-d4f04ff0f1b3e564.png?imageMogr2/auto-orient/strip%7CimageView2/2" /><br /><div class="image-caption">Web页面上的列表数据</div>
+</div>
+<p>上图就是Web页面上的列表数据，将其右侧生成pdf之后的效果如下：</p>
+<div class="image-package">
+<img src="http://upload-images.jianshu.io/upload_images/2556999-566937ade0ec943e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/2556999-566937ade0ec943e.png?imageMogr2/auto-orient/strip%7CimageView2/2" /><br /><div class="image-caption">生成的pdf文件</div>
+</div>
+<h1>实现思路</h1>
+<p>这里我提出两种实现思路：</p>
+<blockquote><p>1.利用Jacob将EXCEL转成PDF<br />2.利用iText将HTML 转为 PDF</p></blockquote>
+<p><strong>1.利用Jacob将EXCEL转成PDF</strong><br />一开始我用的这种思路，主要是因为有生成EXCEL的功能了，想着只要利用jacob再讲EXCEL转成PDF即可，但是后来放弃了。虽然jacob可以生成pdf，word，excel等，但经过本人的实操，问题多多，还要放dll文件到bin目录下。</p>
+<p><strong>首先</strong>，Dispatch.call(sheet,"Activate");指定活动sheet，这个是没有问题，设置哪一个就打哪一个，但是也只是当前的一个，其他的没有显示，对于有多个SHEET的EXCEL 怎么能这一次全部转到一个PDF上？实现是可以实现：遍历sheet保存多个pdf文件，通过itextpdf再将这多个PDF合成一个，不过效率偏低。</p>
+<p><strong>其次</strong>，jacob是对EXCEL中的每个单元格操作的，像上面的PDF中有图片读取很不方便，就算能打出图片也可能会很模糊，而且复杂的EXCEL更是无能为力。所以我建议大家使用第二种利用iText将HTML 转为 PDF，我也是用的第二种思路实现的。</p>
+<p><strong>2.利用iText将HTML 转为 PDF</strong><br />这个思路就是我此篇要重点要讲的，将html转成PDF，首先html有图片，还有各种数据，那么怎么将图片和各种数据填充到html里面呢？这个问题非常好，有童鞋会说，将他们追加拼接到html里，我只想说：大兄弟，别呀，这样太蠢了。这里我们可以利用 freemarker，<strong>首先创建一个FreeMarker模板文件（*.ftl），在这个文件中加入FreeMarker表达式，这些表达式就好比jsp中的jstl标签一样，我们在程序中将数据传递给此文件中即可，在客户端显示时会被真实的数据替换。</strong>下面开始实现过程了。</p>
+<h1>利用iText将HTML 转为 PDF</h1>
+<p><strong>1.准备好生成pdf所需的jar包</strong></p>
+<ul>
+<li>CORE 包：主要是itext相关的一些核心itext.jar</li>
+<li>
+<p>XML  包：xmlworker是一个基于iText的xml生成pdf工具</p>
+</li>
+<li>
+<p>freemarker包：将模板转换成html的jar包(此jar包也能将模板转换成excel，word等)</p>
+</li>
+</ul>
+<p>这里我将它们打包免费分享出来，下载地址：<a href="http://download.csdn.net/detail/wudalang_gd/9764273" target="_blank">itext生成pdf所需的jar包</a></p>
+<p><strong>2.创建ftl模板文件</strong></p>
+<div class="image-package">
+<img src="http://upload-images.jianshu.io/upload_images/2556999-35a459345a7a545c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/2556999-35a459345a7a545c.png?imageMogr2/auto-orient/strip%7CimageView2/2" /><br /><div class="image-caption"></div>
+</div>
+<p><em>创建一个FreeMarker模板文件（</em>.ftl），在这个文件中加入FreeMarker表达式，这些表达式就好比jsp中的jstl标签一样，我们在程序中将数据传递给此文件中即可，在客户端显示时会被真实的数据替换。说白了，ftl模板文件就是在html里加入了FreeMarker表达式，所以里面的内容基本跟html一样，我们可以先创建html文件，修改完成后再将文件后缀改成.ftl即可。*本文.ftl模板如下：</p>
+<blockquote><p>arDraftBillPreview.ftl</p></blockquote>
+<pre><code>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;#--ftl模板--&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+  &lt;/head&gt;
+  &lt;#--一定要特别注意字体，很多字体部分中文不支持--&gt;
+  &lt;body screen_capture_injected="true" ryt11773="1"&gt;
+     &lt;div id="header"&gt;
+        &lt;div&gt;![](${imgPath})&lt;/div&gt;
+        &lt;div id="text" sytle="font-size:30px;width:445px;height:45px;margin:0px auto;border:0px solid #ccc;"&gt;&lt;p&gt;STATEMENT OF ACCOUNT(Draft)&lt;/p&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div&gt;
+        &lt;table style="width: 90%;margin:0px auto;font-size:11px;"&gt;
+        &lt;tr&gt;
+            &lt;td&gt;&lt;font style="font-weight:bold"&gt;Customer:&lt;/font&gt;&lt;span style="font-family:宋体"&gt;${data.name}&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;font style="font-weight:bold"&gt;SOA#:&lt;/font&gt;${data.number}&lt;/td&gt;
+            &lt;td style="width: 2%;"&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;font style="font-weight:bold"&gt;Currency:&lt;/font&gt;${data.bill}&lt;/td&gt; 
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;&lt;font style="font-weight:bold"&gt;Issud by:&lt;/font&gt;UNI-TOP ALRLINES CO.,LTD&lt;/td&gt;
+            &lt;td&gt;&lt;font style="font-weight:bold"&gt;Period:&lt;/font&gt;${data.stDate} ~ ${data.edDate}&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+     &lt;table border="0" style="font-size:10px;text-align:center;border-collapse:collapse;"&gt;
+        &lt;tr style="background-color:#FDCDCB"&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;NO&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Flight Date&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Flight No&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Prefi x No&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;AWB NO&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Origin&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;VIA&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Dest&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Gross Weight(KG)&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Chargeable Weight(KG)&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Unit Price&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Air Freight Charge&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Transfer Charge&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Other Charge&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Total&lt;/td&gt;
+               &lt;td style="border:1px solid #ccc;"&gt;Other Charge Remark&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr style="background-color:#FDCDCB"&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;序号&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;航班日期&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;航班号&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;货单前缀&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;货单号&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;货源地&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;经停站&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;目的地&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;始发地(重)&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;结算重量&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;单价&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;空运费&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;国外转运费&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;其他杂费&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;共计&lt;/td&gt;
+            &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;备注&lt;/td&gt;
+        &lt;/tr&gt;
+
+    &lt;#list dataList as bill&gt;  
+          &lt;tr&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.no}&lt;/td&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.flightDate}&lt;/td&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.flightNo}&lt;/td&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.prefixNo}&lt;/td&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.aWBNO}&lt;/td&gt; 
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.origin}&lt;/td&gt; 
+                    &lt;td style="border:1px solid #ccc;"&gt;&lt;/td&gt; 
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.dest}&lt;/td&gt; 
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.grossWeight}&lt;/td&gt; 
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.chargeableWeight}&lt;/td&gt; 
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.unit}&lt;/td&gt; 
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.airFreightCharge}&lt;/td&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.transferCharge}&lt;/td&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.otherCharge}&lt;/td&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;${bill.total}&lt;/td&gt;  
+                    &lt;td style="font-family:宋体;border:1px solid #ccc;"&gt;${bill.remark!}&lt;/td&gt;  
+           &lt;/tr&gt;
+    &lt;/#list&gt;
+    &lt;#if total??&gt;  
+           &lt;tr&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;&lt;/td&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;&lt;/td&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;&lt;/td&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;&lt;/td&gt;  
+                    &lt;td style="border:1px solid #ccc;"&gt;&lt;/td&gt; 
+                    &lt;td style="border:1px solid #ccc;"&gt;&lt;/td&gt; 
+                    &lt;td style="border:1px solid #ccc;"&gt;&lt;/td&gt; 
+                    &lt;td style="font-family:宋体;color:red;border: 1px solid #ccc;"&gt;总计：&lt;/td&gt; 
+                    &lt;td style="color:red;border:1px solid #ccc;"&gt;${total.grossWeight}&lt;/td&gt; 
+                    &lt;td style="color:red;border:1px solid #ccc;"&gt;${total.chargeableWeight}&lt;/td&gt; 
+                    &lt;td style="color:red;border:1px solid #ccc;"&gt;&lt;/td&gt; 
+                    &lt;td style="color:red;border:1px solid #ccc;"&gt;${total.airFreightCharge}&lt;/td&gt;  
+                    &lt;td style="color:red;border:1px solid #ccc;"&gt;${total.transferCharge}&lt;/td&gt;  
+                    &lt;td style="color:red;border:1px solid #ccc;"&gt;${total.otherCharge}&lt;/td&gt;  
+                    &lt;td style="color:red;border:1px solid #ccc;"&gt;${total.total}&lt;/td&gt;  
+                    &lt;td style="color:red;border:1px solid #ccc;"&gt;&lt;/td&gt;  
+            &lt;/tr&gt;
+    &lt;/#if&gt;  
+        &lt;/table&gt;
+        &lt;/div&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+<p><em>以上代码在myeclipse中预览的效果如下：</em></p>
+<div class="image-package">
+<img src="http://upload-images.jianshu.io/upload_images/2556999-c6416e4d6ef17365.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/2556999-c6416e4d6ef17365.png?imageMogr2/auto-orient/strip%7CimageView2/2" /><br /><div class="image-caption"></div>
+</div>
+<p><strong>注意：如果使用不存在的freemarker指令，FreeMarker不会使用模板输出，而是产生一个错误消息。其次，在写ftl模板的时候，因为xmlworker支持的CSS样式极少，所以模板内容要尽量简单。对于DOCTYPE和html标签的约束页比较严格。对于一个标签中含有中文、数字或英文的时候，很可能会出现问题。这是因为xmlworker在渲染PDF的时候是以html的标签为单位的。我发现有些字体下部分中文生成pdf不会显示。</strong>另外，对于freemarker模板语言不熟悉的童鞋，我会在文末贴出一些参考资料。</p>
+<p><strong>3.向ftl模板文件中填充数据，同时将其生成html</strong><br />在业务处理层，将数据传递个ftl ，同时解析ftl模板生成html</p>
+<pre><code>//将需要在客户端浏览器中显示的业务数据放在一个map中，传递给FreeMarker   
+                Map&lt;String, Object&gt; map = new HashMap&lt;String, Object&gt;();  
+                map.put("imgPath", imgPath);
+                map.put("data",data);
+                map.put("dataList", dataList);  
+                map.put("total", total);  
+                TemplateParseUtil.parse(templatePath, "arDraftBillPreview.ftl", htmlPath, map);</code></pre>
+<p>解析ftl模板生成html(此方法与生成Excel,xml等通用)，这里我写了一个工具类<br /><em>TemplateParseUtil.java</em></p>
+<pre><code>public class TemplateParseUtil {
+    /**
+     * 解析模板生成html(此方法与生成Excel,xml等通用)
+     * @param templateDir  ftl模板目录
+     * @param templateName ftl模板名称
+     * @param htmlPath 生成的html文件路径
+     * @param data 数据参数
+     * @throws IOException
+     * @throws TemplateException
+     */
+    public static void parse(String templateDir,String templateName,String htmlPath,Map&lt;String,Object&gt; data) throws IOException, TemplateException {
+        //初始化工作
+        Configuration cfg = new Configuration();
+        //设置默认编码格式为UTF-8
+        cfg.setDefaultEncoding("UTF-8"); 
+        //全局数字格式
+        cfg.setNumberFormat("0.00");
+        //设置模板文件位置
+        cfg.setDirectoryForTemplateLoading(new File(templateDir));
+        cfg.setObjectWrapper(new DefaultObjectWrapper());
+        //加载模板
+        Template template = cfg.getTemplate(templateName,"utf-8");
+        OutputStreamWriter writer = null;
+        try{
+            //填充数据至html
+            writer = new OutputStreamWriter(new FileOutputStream(htmlPath),"UTF-8");
+            template.process(data, writer);
+            writer.flush();
+        }finally{
+            writer.close();
+        }    
+    }
+}</code></pre>
+<p><strong>4.利用itext将生成的html渲染生成PDF</strong></p>
+<p>步骤基本如下：</p>
+<pre><code> // 1.新建document对象
+        Document document = new Document();
+// 2.建立一个书写器(Writer)与document对象关联，通过书写器(Writer)可以将文档写入到磁盘中。
+// 创建 PdfWriter 对象 第一个参数是对文档对象的引用，第二个参数是文件的实际名称，在该名称中还会给出其输出路径。
+        PdfWriter writer = PdfWriter.getInstance(document, new       FileOutputStream("D:/test.pdf"));
+// 3.打开文档
+        document.open();
+ // 4.添加一个内容段落
+      document.add(new Paragraph("Hello World!"));
+ // 5.关闭文档
+     document.close();</code></pre>
+<p>本文中的利用itext生成PDF的代码如下：</p>
+<pre><code>                Document document = new Document(PageSize.A4, 10, 50, 10, 50);
+                // step 2
+                PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(servletPath+DEST));
+                // step 3
+                document.open();
+                // step 4
+                XMLWorkerHelper.getInstance().parseXHtml(writer, document,
+                        new FileInputStream(htmlPath), Charset.forName("UTF-8"));
+                // step 5
+                document.close();</code></pre>
+<p><strong>5.完整处理逻辑</strong><br />可能写到这里代码有点分散，这里将上面3、4步骤的代码完整逻辑贴出来，让大家看的清晰明白点：</p>
+<pre><code>/**
+     * 
+     * 草稿账单pdf导出
+     */
+    @RequestMapping("/exportPDFDraftPreview")
+    public @ResponseBody ControllerResult&lt;?&gt; exportPDFDraftPreview(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        ExecuteController e = new ExecuteControllerHandle() {
+            @Override
+            public ControllerResult&lt;?&gt; dowith(HttpServletRequest request,HttpServletResponse response, Object... params) throws Exception {
+                /**
+                 * 具体导出步骤：先查询出具体的表头信息，然后再查询出具体的列表数据。最后整合放在具体的类里
+                 */
+                // 请求参数绑定
+                DraftBillResponse info = ControllerUtils.bindParams(request,DraftBillResponse.class);//返回一个草稿账单号
+                info.setMoneytype(info.get币种());
+                DraftBill topInfo = new DraftBill();
+                topInfo.set币种(info.get币种());
+                topInfo.set草稿账单编号(info.get草稿账单编号());
+                // 业务层调用
+                IFinancialManagementMgr mgr = FinancialManagementFactory.createIFinancialManagementMgrMgrImpl();
+
+                List&lt;DraftBill&gt; bill =  mgr.queryManuscriptPreview(topInfo);//查询表头
+
+                List&lt;DraftBillResponse&gt; list = mgr.queryDraftPreview(info); //查询列表数据
+
+
+                String servletPath = request.getSession().getServletContext().getRealPath("/");//请求的服务器
+                String templatePath = servletPath+"template";//模板目录
+                String htmlPath = servletPath+"tempFile\\"+info.get草稿账单编号()+".html";//生成的html地址
+                String imgPath = servletPath+"images\\exlTop.png";//模板中的图片
+                String DEST = "tempFile\\"+info.get草稿账单编号()+".pdf";//将要生成的pdf
+
+
+                /*DraftBill data = new DraftBill();
+                data = bill.get(0);*/
+                //进行英文转换，防止无法识别
+
+                List&lt;BillList&gt;  dataList = new ArrayList&lt;BillList&gt;();
+                BillList listData = null;
+                BillList total = new BillList();
+                BillExport data = new BillExport(bill.get(0).get代理人(),bill.get(0).get草稿账单编号(),bill.get(0).get币种(),bill.get(0).get账单周期起(),bill.get(0).get账单周期止());
+
+                double num1 = 0,num2 = 0,num3 = 0,num4 = 0,num5 = 0,num6 = 0;  //地重，始发重量，空运费，转运费，杂费，共计
+
+
+                for(DraftBillResponse res : list){//集合
+
+                  double 地重 =     Double.valueOf(res.get始发地重量());  //设置统计数据
+                  double 始发重 =     Double.valueOf(res.get结算重量());
+                  double 空运费 =     Double.valueOf(res.get运费());
+                  double 转运费 =     Double.valueOf(res.get国外联运费());
+                  double 杂费 =     Double.valueOf(res.get杂费());
+                  double 统计 =     Double.valueOf(res.get运费())+ Double.valueOf(res.get国外联运费())+Double.valueOf(res.get杂费());
+                  num1 = num1 + 地重;
+                  num2 = num2 + 始发重;
+                  num3 = num3 + 空运费;
+                  num4 = num4 + 转运费;
+                  num5 = num5 + 杂费;
+                  num6 = num6 + 统计;
+                    listData = new BillList(res.get序号(), res.get航班日期(), res.get航班号(), res.get货单前缀(),  //设置列表数据
+                            res.get货单号(), res.get货源地(), "", res.get目的站(), res.get始发地重量(),
+                            res.get结算重量(), res.get空运费费率(), res.get运费(), 
+                              res.get国外联运费(),res.get杂费(), String.valueOf(CommonUtil.toDecimalFormat(统计)),
+                            res.get备注());
+
+                    dataList.add(listData);
+                }
+
+                //将统计的数据放进实体
+                total.setGrossWeight(String.valueOf(CommonUtil.toDecimalFormat(num1)));
+                total.setChargeableWeight(String.valueOf(CommonUtil.toDecimalFormat(num2)));
+                total.setAirFreightCharge(String.valueOf(CommonUtil.toDecimalFormat(num3)));
+                total.setTransferCharge(String.valueOf(CommonUtil.toDecimalFormat(num4)));
+                total.setOtherCharge(String.valueOf(CommonUtil.toDecimalFormat(num5)));
+                total.setTotal(String.valueOf(CommonUtil.toDecimalFormat(num6)));
+
+              //将需要在客户端浏览器中显示的业务数据放在一个map中，传递给FreeMarker   
+                Map&lt;String, Object&gt; map = new HashMap&lt;String, Object&gt;();  
+                map.put("imgPath", imgPath);
+                map.put("data",data);
+                map.put("dataList", dataList);  
+                map.put("total", total);  
+                TemplateParseUtil.parse(templatePath, "arDraftBillPreview.ftl", htmlPath, map);
+
+                Document document = new Document(PageSize.A4, 10, 50, 10, 50);
+                // step 2
+                PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(servletPath+DEST));
+                // step 3
+                document.open();
+                // step 4
+                XMLWorkerHelper.getInstance().parseXHtml(writer, document,
+                        new FileInputStream(htmlPath), Charset.forName("UTF-8"));
+                // step 5
+                document.close();
+
+                return ControllerUtils.buildSimpleResult(true, DEST);
+            }
+        };</code></pre>
+<p>在上面的程序中，包括PDF上的图片，表头及表身数据都传给ftl模板中了，在生成PDF之前，都会先生成一个.html的文件到tempFile的文件夹下，如下：<br /></p><div class="image-package">
+<img src="http://upload-images.jianshu.io/upload_images/2556999-19f0aadaaaa89ebb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/2556999-19f0aadaaaa89ebb.png?imageMogr2/auto-orient/strip%7CimageView2/2" /><br /><div class="image-caption"></div>
+</div>
+<h1>写在最后</h1>
+<p>其实整个过程都比较简单，难就难在一开始你不知道用那种方式去实现，这种时候我建议你都试试，毕竟一个东西你试过之后才知道好不好，适不适合。还有一点就是，对于你不知道的东西，网上一般都有很多参考资料，一定要善于利用搜索引擎学习。关于学习，就三点：坚持，坚持，坚持。</p>
+<p>下面列出一些相关链接供大家参考：<br /><a href="http://piperzero.iteye.com/blog/1660540" target="_blank">iText入门</a><br /><a href="http://www.cnblogs.com/Iran1112/p/6013474.html" target="_blank">动态jsp页面转PDF输出到页面</a><br /><a href="http://www.open-open.com/lib/view/open1402448471822.html" target="_blank">最简单 iText 的 PDF 生成方案（含中文解决方案）HTML 转为 PDF</a><br /><a href="http://carolli.iteye.com/blog/1387838" target="_blank">ftl 入门</a><br /><a href="http://lavasoft.blog.51cto.com/62575/716825/" target="_blank">Freemarker 最简单的例子程序</a><br /><a href="http://format-me.iteye.com/blog/543905" target="_blank">FreeMarker 例子</a><br /><a href="http://blog.csdn.net/u010722643/article/details/41732607" target="_blank">freemarker生成excel、word、html、xml实例教程</a><br /><a href="http://lauy.iteye.com/blog/1774880" target="_blank">freemarker判断对象是否为空</a></p>
+<p> 阅读我的其他文章</p>
+<blockquote><ul>
+<li><a href="http://www.jianshu.com/p/292da3de5bcd" target="_blank">1024程序员节，向改变世界的程序员致敬</a></li>
+<li><a href="http://www.jianshu.com/p/bee295965800" target="_blank">程序员的你是否熟练掌握Chrome开发者工具？</a></li>
+<li><a href="http://www.jianshu.com/p/83afa19c5096" target="_blank">UML学习归纳整理</a></li>
+</ul></blockquote>
+
+        </div>
+
+
+                <hr style="visibility: hidden;">
+
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                    style="text-align: right"
+                    data-thread-key="/2017/02/26/web-develop(2)"
+                    data-title="我的Web开发实战总结(二)"
+                    data-url="http://localhost:4000/2017/02/26/web-develop(2)/"
+                    data-images="http://localhost:4000/img/post-bg-2015.jpg"
+                    data-content="
+          写在前面
+这篇是继我的Web开发实战总结(一)的第二篇文章，在此篇里，我主要总结一下如何把Web页面上的报表或列表数据转换成pdf文... | Wblearn的博客 | Wblearn Blog " >
+                    <div class="ds-share-inline">
+                      <style> 
+                        .ds-share-icons-16 {display:none;} 
+                      </style>
+                      <ul class="ds-share-icons-16">
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2017/01/01/git-push/" data-toggle="tooltip" data-placement="top" title="push本地代码到github出错">
+                        Previous<br>
+                        <span>push本地代码到github出错</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2017/04/06/sso/" data-toggle="tooltip" data-placement="top" title="单点登录原理与简单实现">
+                        Next<br>
+                        <span>单点登录原理与简单实现</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                        data-thread-key="/2017/02/26/web-develop(2)"
+                        data-title="我的Web开发实战总结(二)"
+                        data-url="http://localhost:4000/2017/02/26/web-develop(2)/" >
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+				
+				
+                <!-- livere 评论框 start -->
+                <div class="comment">
+                    <div id="lv-container" data-id="city" data-uid="MTAyMC8yODkzOC81NTA3"></div>
+                </div>
+                <!-- livere 评论框 end -->
+                
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#redis" title="redis" rel="3">
+                                    redis
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#集群" title="集群" rel="2">
+                                    集群
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#程序员" title="程序员" rel="3">
+                                    程序员
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#闲谈" title="闲谈" rel="5">
+                                    闲谈
+                                </a>
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#Web" title="Web" rel="3">
+                                    Web
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://weibo.com/wudalanggd">wblearn的微博</a></li>
+                    
+                        <li><a href="https://wblearn.github.io/study-video">study video</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by wb
+    var _user = 'wblearnblog';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user };
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+
+<!-- livere 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+</script>
+<!-- livere 公共JS代码 end -->
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by wblearn, add target = "_blank" to <a> by wblearn -->
+                    
+                    
+                    <li>
+                        <a target="_blank" href="http://weibo.com/wudalanggd">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+
+                    
+					
+					
+                    <li>
+                        <a target="_blank" href="http://www.jianshu.com/u/48599dc7ef1b">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-stack-1x fa-inverse">简</i>
+                            </span>
+                        </a>
+                    </li>
+                    
+					
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/wblearn">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Wblearn Blog 2019
+                    <br>
+                          powered by <a href="http://wblearn.github.io/">wblearn</a> 
+                    <!--<iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=wblearn&repo=wblearn.github.io&type=star&count=true" >
+                    </iframe>-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/wblearn-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script type="text/javascript">
+    if(navigator.serviceWorker){
+        // For security reasons, a service worker can only control the pages that are in the same directory level or below it. That's why we put sw.js at ROOT level.
+        navigator.serviceWorker
+            .register('/sw.js')
+            .then((registration) => {console.log('Service Worker Registered. ', registration)})
+            .catch((error) => {console.log('ServiceWorker registration failed: ', error)})
+    }
+</script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so wblearnblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/ 
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers   
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async('/js/jquery.tagcloud.js',function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by wblearn
+    var _gaId = 'UA-49627206-1';
+    var _gaDomain = 'wblearn.github.io';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

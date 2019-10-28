@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="@wblearn,不要让任何事情成为你不去学习的理由！">
+    <meta name="keywords"  content="wblearn, @wblearn, wblearn的博客,wblearn Blog, 博客, 个人网站, 互联网">
+    <meta name="theme-color" content="#000000">
+    
+    <title>我的博客搭建之git的使用 - Wblearn的博客 | Wblearn Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/avatar-wb.jpg">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/2016/12/15/mygit/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+	
+	<!-- videos CSS -->
+    <link rel="stylesheet" href="/css/videos.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Wblearn Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/videos/">Videos</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post-bg-alitrip.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post-bg-alitrip.jpg')
+    }
+
+    
+</style>
+<header class="intro-header" >
+    <div class="header-mask"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#git" title="git">git</a>
+                        
+                        <a class="tag" href="/tags/#博客" title="博客">博客</a>
+                        
+                    </div>
+                    <h1>我的博客搭建之git的使用</h1>
+                    
+                    
+                    <h2 class="subheading"></h2>
+                    
+                    <span class="meta">Posted by wblearn on December 15, 2016</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<div data-note-content="" class="show-content">
+          <h1>写在前面</h1>
+<p>前天我的github博客搭建好啦，并在本地写了一篇文章<a href="https://wblearn.github.io/2016/12/23/one/" target="_blank">我的独立博客<small>(第一篇)</small></a>利用git将其push到github上，那么，今天就简单记录下git的使用。整个过程是在windows下操作的。</p>
+<h1>git将本地项目push到github</h1>
+<p><strong>1.Git下载地址</strong><br />git官网是需要翻墙才能下载的，这里给出Git-2.9.2-64-bit下载地址(我的是64位系统)： <a href="http://download.csdn.net/download/gaoshangwin/9578050" target="_blank">Git-2.9.2-64-bit</a></p>
+<p>下载后安装步骤可以参考这里：<a href="http://blog.csdn.net/wudalang_gd/article/details/53860563" target="_blank">Win7下Git的安装</a></p>
+<div class="image-package">
+<img src="http://upload-images.jianshu.io/upload_images/2556999-0cccec3bad61f034.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/2556999-0cccec3bad61f034.png?imageMogr2/auto-orient/strip%7CimageView2/2" /><br /><div class="image-caption">安装成功后文件目录</div>
+</div>
+<p><strong>2. 创建ssh key–安全传输</strong></p>
+<p></p><li>
+<em>方法1. 使用git gui 直接生成</em>
+<pre>打开git gui<br />help  – show ssh key</pre>
+
+<p></p>
+</li><li>
+<em>方法2. 使用git bash/git cmd 创建(git bash 为例 )</em>
+<blockquote><p>设置git的user.name和user.email</p></blockquote>
+<pre>$ git config --global user.name "wblearn"<br />$ git config --global user.email "your email"</pre>
+
+<blockquote><p>查看是否已经存在ssh key是否存在</p></blockquote>
+<pre>$ cd ~/.ssh</pre>
+<br /><div class="image-package">
+<img src="http://upload-images.jianshu.io/upload_images/2556999-463b8867c3907ef7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/2556999-463b8867c3907ef7.png?imageMogr2/auto-orient/strip%7CimageView2/2" /><br /><div class="image-caption">以上步骤截图</div>
+</div>
+<br /><pre><strong>如果没有则提示： No such file or directory<br />如果有则进入~.ssh路径下（ls查看当前路径文件，rm * 删除所有文件）生成新的ssh key</strong></pre>
+
+<blockquote><p>生成ssh key</p></blockquote>
+<pre>cd ~ //保持在"~"目录下<br />$ ssh-keygen -t rsa -C "xxxxxx@qq.com"//填写真实的邮箱</pre>
+
+<pre>Generating public/private rsa key pair.<br />Enter file in which to save the key (/c/Users/xxxx/.ssh/id_rsa): #不填直接回车<br />Enter passphrase (empty for no passphrase): #输入密码（可以为空）<br />Enter same passphrase again: #再次确认密码（可以为空）<br />Your identification has been saved in /c/Users/xxxx/.ssh/id_rsa. #生成的密钥<br />Your public key has been saved in /c/Users/xxxx/.ssh/id_rsa.pub. #生成的公钥</pre>
+
+
+<div class="image-package">
+<img src="http://upload-images.jianshu.io/upload_images/2556999-63e1cdae6971a986.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/2556999-63e1cdae6971a986.png?imageMogr2/auto-orient/strip%7CimageView2/2" /><br /><div class="image-caption">以上步骤截图</div>
+</div>
+<blockquote><p>添加ssh key到github</p></blockquote>
+<pre>1.打开github→Settings→SSH kyes→Add SSH key<br />2.进入c:/Users/xxxx/.ssh/目录下，打开id_rsa.pub文件，全选复制公钥内容<br />3.Title自定义，将公钥粘贴到GitHub中Add an SSH key的key输入框，最后”Add Key”</pre>
+
+<blockquote><p>测试ssh key是否设置成功</p></blockquote>
+<pre>$ ssh -T git@github.com</pre>
+<br /><pre>The authenticity of host 'github.com (192.30.253.113)' can't be established.<br />RSA key fingerprint is 16:27:xx:xx:xx:xx:xx:4d:eb:df:a6:48.<br />Are you sure you want to continue connecting (yes/no)? yes #确认你是否继续联系，输入yes<br />Warning: Permanently added 'github.com,192.30.253.113' (RSA) to the list of known hosts.<br />Enter passphrase for key '/c/Users/xxxx/.ssh/id_rsa':  #生成ssh kye是密码为空则无此项，若设置有密码则有此项且，输入生成ssh key时设置的密码即可。<br />Hi xxx! You've successfully authenticated, but GitHub does not provide shell access. #出现词句话，说明设置成功。</pre>
+
+<div class="image-package">
+<img src="http://upload-images.jianshu.io/upload_images/2556999-30eae475b1f1261b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/2556999-30eae475b1f1261b.png?imageMogr2/auto-orient/strip%7CimageView2/2" /><br /><div class="image-caption">以上步骤截图</div>
+</div>
+<p><strong>3.将本地项目push到github(git cmd为例)</strong></p>
+<blockquote><p>打开git cmd 将路径设置到项目路径</p></blockquote>
+<div class="image-package">
+<img src="http://upload-images.jianshu.io/upload_images/2556999-eb9a5fed94534c03.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/2556999-eb9a5fed94534c03.png?imageMogr2/auto-orient/strip%7CimageView2/2" /><br /><div class="image-caption">Paste_Image.png</div>
+</div>
+<blockquote><p>初始化项目</p></blockquote>
+<pre>git init</pre>
+<br />&gt;添加远程仓库<br /><pre>git remote add origin "你自己仓库的地址"</pre>
+
+<blockquote><p>push本地项目到远程仓库</p></blockquote>
+<p></p>
+<pre>git add . //添加所有本地代码到缓冲区<br />git commit -m "first commit"//描述信息<br />git push -u origin master//origin也可以自己命名远程仓库名称</pre>
+<br /><strong><small>ps:我试了两次没有push成功，可能是网速的原因，第三次push成功，大家要有耐心哦</small></strong>
+<blockquote><p>在github查看自己的项目是否传上去 </p></blockquote>
+<div class="image-package">
+<img src="http://upload-images.jianshu.io/upload_images/2556999-e6e847c0adcf59f4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-original-src="http://upload-images.jianshu.io/upload_images/2556999-e6e847c0adcf59f4.png?imageMogr2/auto-orient/strip%7CimageView2/2" /><br /><div class="image-caption">效果图</div>
+</div>
+<h1>写在最后</h1>
+<p>撑着年末，就这样把自己的独立博客搭建好了，还有一个星期就2017了，希望2017自己能不断学习，不断进步，遇见未来更好的自己。</p>
+<blockquote><p><a href="https://wblearn.github.io/" target="_blank">我的独立博客</a>因为刚刚上线，可能会存在一些问题，欢迎大家帮忙测试，当然你也可以fork，star我的模板。</p></blockquote>
+</li>
+        </div>
+
+
+                <hr style="visibility: hidden;">
+
+                
+                <!-- 多说 Share start -->
+                <div class="ds-share"
+                    style="text-align: right"
+                    data-thread-key="/2016/12/15/mygit"
+                    data-title="我的博客搭建之git的使用"
+                    data-url="http://localhost:4000/2016/12/15/mygit/"
+                    data-images="http://localhost:4000/img/post-bg-alitrip.jpg"
+                    data-content="
+          写在前面
+前天我的github博客搭建好啦，并在本地写了一篇文章我的独立博客(第一篇)利用git将其push到github上，那么，... | Wblearn的博客 | Wblearn Blog " >
+                    <div class="ds-share-inline">
+                      <style> 
+                        .ds-share-icons-16 {display:none;} 
+                      </style>
+                      <ul class="ds-share-icons-16">
+                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                      </ul>
+                      <div class="ds-share-icons-more">
+                      </div>
+                    </div>
+                <hr>
+                </div>
+                <!-- 多说 Share end-->
+                
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2016/11/27/UML/" data-toggle="tooltip" data-placement="top" title="UML学习归纳整理">
+                        Previous<br>
+                        <span>UML学习归纳整理</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2016/12/23/one/" data-toggle="tooltip" data-placement="top" title="我的独立博客(第一篇)">
+                        Next<br>
+                        <span>我的独立博客(第一篇)</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+
+
+                
+                <!-- 多说评论框 start -->
+                <div class="comment">
+                    <div class="ds-thread"
+                        data-thread-key="/2016/12/15/mygit"
+                        data-title="我的博客搭建之git的使用"
+                        data-url="http://localhost:4000/2016/12/15/mygit/" >
+                    </div>
+                </div>
+                <!-- 多说评论框 end -->
+                
+
+                
+				
+				
+                <!-- livere 评论框 start -->
+                <div class="comment">
+                    <div id="lv-container" data-id="city" data-uid="MTAyMC8yODkzOC81NTA3"></div>
+                </div>
+                <!-- livere 评论框 end -->
+                
+
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+                				<a href="/tags/#redis" title="redis" rel="3">
+                                    redis
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#集群" title="集群" rel="2">
+                                    集群
+                                </a>
+                            
+        				
+                            
+                				<a href="/tags/#程序员" title="程序员" rel="3">
+                                    程序员
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#闲谈" title="闲谈" rel="5">
+                                    闲谈
+                                </a>
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#Web" title="Web" rel="3">
+                                    Web
+                                </a>
+                            
+        				
+                            
+        				
+                            
+                				<a href="/tags/#git" title="git" rel="2">
+                                    git
+                                </a>
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://weibo.com/wudalanggd">wblearn的微博</a></li>
+                    
+                        <li><a href="https://wblearn.github.io/study-video">study video</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    // dynamic User by wb
+    var _user = 'wblearnblog';
+
+    // duoshuo comment query.
+    var duoshuoQuery = {short_name: _user };
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0]
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+<!-- 多说公共JS代码 end -->
+
+
+
+
+
+
+<!-- livere 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+    })(document, 'script');
+</script>
+<!-- livere 公共JS代码 end -->
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by wblearn, add target = "_blank" to <a> by wblearn -->
+                    
+                    
+                    <li>
+                        <a target="_blank" href="http://weibo.com/wudalanggd">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+
+                    
+					
+					
+                    <li>
+                        <a target="_blank" href="http://www.jianshu.com/u/48599dc7ef1b">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-stack-1x fa-inverse">简</i>
+                            </span>
+                        </a>
+                    </li>
+                    
+					
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/wblearn">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Wblearn Blog 2019
+                    <br>
+                          powered by <a href="http://wblearn.github.io/">wblearn</a> 
+                    <!--<iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=wblearn&repo=wblearn.github.io&type=star&count=true" >
+                    </iframe>-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/wblearn-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script type="text/javascript">
+    if(navigator.serviceWorker){
+        // For security reasons, a service worker can only control the pages that are in the same directory level or below it. That's why we put sw.js at ROOT level.
+        navigator.serviceWorker
+            .register('/sw.js')
+            .then((registration) => {console.log('Service Worker Registered. ', registration)})
+            .catch((error) => {console.log('ServiceWorker registration failed: ', error)})
+    }
+</script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so wblearnblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/ 
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers   
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async('/js/jquery.tagcloud.js',function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by wblearn
+    var _gaId = 'UA-49627206-1';
+    var _gaDomain = 'wblearn.github.io';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+
+<!-- Side Catalog -->
+
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
