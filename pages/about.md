@@ -1,16 +1,16 @@
 ---
 layout: page
 title: About
-description: 打码改变世界
-keywords: Zhuang Ma, 马壮
+description: 微胖男会改变世界
+keywords: 个人介绍
 comments: true
 menu: 关于
 permalink: /about/
 ---
 
-我是马壮，码而生，码而立。
+我是张俊峰，融颜值与实力于一身。
 
-仰慕「优雅编码的艺术」。
+坚信微胖是最完美的形态。
 
 坚信熟能生巧，努力改变人生。
 
