@@ -1,0 +1,338 @@
+I"�<<p>3-1 变量在第一次被赋值时自动声明。在赋值时解释器会根据语法和右侧的操作数来决定新对象的类型。</p>
+
+<p>3-2 函数总是返回一个值，显式 return 的值或者 None。返回的值的类型也是动态确定。</p>
+
+<p>3-3 因为变量名 <strong>xxx</strong> 对 Python 来说有特殊含义，对于普通的变量应当避免这种命名风格。</p>
+
+<p>3-4 可以，使用 “;”</p>
+
+<p>3-5 可以，使用 “" 或者括号</p>
+
+<p>3-6</p>
+
+<p>(a)x = 1, y = 2, z = 3</p>
+
+<p>(b)z = 2, x = 3, y = 1</p>
+
+<p>3-7 40XL, $aving$, 0x40L, thisIsn’tAVar, big-daddy, 2hot2touch, counter-1 不合法。不是以字母或者下划线开头，或者有非字母下划线数字的字符。print, if 是关键字。</p>
+
+<p>3-10</p>
+
+<p>用异常处理取代对 os.path.exists() 的调用：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">ls</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span>
+
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">'input a filename:'</span><span class="p">)</span>
+<span class="c1">#    if os.path.exists(fname):
+#        print "Error: '%s' already exists" % fname
+#    else:
+#        break
+</span>    <span class="k">try</span><span class="p">:</span>
+        <span class="n">fobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">'r'</span><span class="p">)</span>
+    <span class="k">except</span> <span class="nb">IOError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">"Error: '</span><span class="si">%</span><span class="s">s' already exists"</span> <span class="o">%</span> <span class="n">fname</span>
+        <span class="n">fobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="nb">all</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">print</span> <span class="s">"</span><span class="se">\n</span><span class="s">Enter lines ('.' by itself to quit).</span><span class="se">\n</span><span class="s">"</span>
+
+<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+    <span class="n">entry</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">'&gt;'</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">entry</span> <span class="o">==</span> <span class="s">'.'</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+
+<span class="n">fobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span>
+<span class="n">fobj</span><span class="o">.</span><span class="n">writelines</span><span class="p">([</span><span class="s">'</span><span class="si">%</span><span class="s">s</span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ls</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">all</span><span class="p">])</span>
+<span class="n">fobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="k">print</span> <span class="s">'Done!'</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>用 os.path.exists() 取代异常处理方法：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">fname</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">'Enter filename:'</span><span class="p">)</span>
+<span class="k">print</span>
+
+<span class="c1">#try:
+#    fobj = open(fname, 'r')
+#except IOError, e:
+#    print '*** file open error:', e
+#else:
+#    for eachLine in fobj:
+#        print eachLine,
+#    fobj.close()
+</span><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="n">fobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">'r'</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">eachLine</span> <span class="ow">in</span> <span class="n">fobj</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">eachLine</span><span class="p">,</span>
+    <span class="n">fobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">'this file not exists'</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>3-11</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">fname</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">'Enter filename:'</span><span class="p">)</span>
+<span class="k">print</span>
+
+<span class="c1">#try:
+#    fobj = open(fname, 'r')
+#except IOError, e:
+#    print '*** file open error:', e
+#else:
+#    for eachLine in fobj:
+#        print eachLine,
+#    fobj.close()
+</span><span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="n">fobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">'r'</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">eachLine</span> <span class="ow">in</span> <span class="n">fobj</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">eachLine</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">fobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">print</span> <span class="s">'this file not exists'</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>3-12</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+</pre></td><td class="rouge-code"><pre><span class="s">"""to read or make a file"""</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="k">def</span> <span class="nf">makeTextFile</span><span class="p">():</span>
+    <span class="s">'''make a file'''</span>
+    <span class="n">ls</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">'input a filename:'</span><span class="p">)</span>
+    <span class="c1">#    if os.path.exists(fname):
+</span>    <span class="c1">#        print "Error: '%s' already exists" % fname
+</span>    <span class="c1">#    else:
+</span>    <span class="c1">#        break
+</span>        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">'r'</span><span class="p">)</span>
+        <span class="k">except</span> <span class="nb">IOError</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">"Error: '</span><span class="si">%</span><span class="s">s' already exists"</span> <span class="o">%</span> <span class="n">fname</span>
+            <span class="n">fobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nb">all</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">print</span> <span class="s">"</span><span class="se">\n</span><span class="s">Enter lines ('.' by itself to quit).</span><span class="se">\n</span><span class="s">"</span>
+
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">entry</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">'&gt;'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">entry</span> <span class="o">==</span> <span class="s">'.'</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">all</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
+
+    <span class="n">fobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">'w'</span><span class="p">)</span>
+    <span class="n">fobj</span><span class="o">.</span><span class="n">writelines</span><span class="p">([</span><span class="s">'</span><span class="si">%</span><span class="s">s</span><span class="si">%</span><span class="s">s'</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">ls</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">all</span><span class="p">])</span>
+    <span class="n">fobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">print</span> <span class="s">'Done!'</span>
+
+<span class="k">def</span> <span class="nf">readTextFile</span><span class="p">():</span>
+    <span class="s">'''read a file'''</span>
+    <span class="n">fname</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">'Enter filename:'</span><span class="p">)</span>
+    <span class="k">print</span>
+
+    <span class="c1">#try:
+</span>    <span class="c1">#    fobj = open(fname, 'r')
+</span>    <span class="c1">#except IOError, e:
+</span>    <span class="c1">#    print '*** file open error:', e
+</span>    <span class="c1">#else:
+</span>    <span class="c1">#    for eachLine in fobj:
+</span>    <span class="c1">#        print eachLine,
+</span>    <span class="c1">#    fobj.close()
+</span>    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+        <span class="n">fobj</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s">'r'</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">eachLine</span> <span class="ow">in</span> <span class="n">fobj</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">eachLine</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="n">fobj</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">'this file not exists'</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="s">'''main menu'''</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">'1.Read a file'</span>
+        <span class="k">print</span> <span class="s">'2.Make a file'</span>
+        <span class="k">print</span> <span class="s">'x.exit'</span>
+        <span class="n">myStr</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">'input your choice:'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">myStr</span> <span class="o">==</span> <span class="s">'1'</span><span class="p">:</span>
+            <span class="n">readTextFile</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">myStr</span> <span class="o">==</span> <span class="s">'2'</span><span class="p">:</span>
+            <span class="n">makeTextFile</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="n">myStr</span> <span class="o">==</span> <span class="s">'x'</span><span class="p">:</span>
+            <span class="k">break</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">'__main__'</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>3-13</p>
+
+<p>Windows 下 curses 模块貌似无法正常使用……</p>
+
+<p>迂回的实现思路是将文件内容按行读取到一个列表里，</p>
+
+<p>然后让用户修改每一行，</p>
+
+<p>最后让用户选择是否保存，</p>
+
+<p>保存则重写文件，</p>
+
+<p>不保存则退出。</p>
+:ET

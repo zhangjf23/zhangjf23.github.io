@@ -1,0 +1,233 @@
+I"�C<p><strong>Date 和 Calendar 转 String</strong></p>
+
+<p>借助 SimpleDateFormat 类的 format 方法，Calendar.getTime() 返回 Date，最终 Calendar 也是转化为 Date 后转 String。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="c1">// see SimpleDateFormat in Java API</span>
+<span class="nc">String</span> <span class="n">format</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="s">"yyyy-MM-dd HH:mm:ss"</span><span class="o">);</span>
+<span class="nc">SimpleDateFormat</span> <span class="n">sdf</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SimpleDateFormat</span><span class="o">(</span><span class="n">format</span><span class="o">,</span> <span class="nc">Locale</span><span class="o">.</span><span class="na">US</span><span class="o">);</span>
+
+<span class="c1">// Date</span>
+<span class="nc">String</span> <span class="n">strDate</span> <span class="o">=</span> <span class="n">sdf</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="k">new</span> <span class="nc">Date</span><span class="o">());</span>
+
+<span class="nc">Calendar</span> <span class="n">cal</span> <span class="o">=</span> <span class="nc">Calendar</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+<span class="c1">// Calendar</span>
+<span class="nc">String</span> <span class="n">strCalendar</span> <span class="o">=</span> <span class="n">sdf</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="n">cal</span><span class="o">.</span><span class="na">getTime</span><span class="o">());</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><strong>String 转 Date、Calendar</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="nc">String</span> <span class="n">strDate</span> <span class="o">=</span> <span class="s">"2015-04-04 00:33:00"</span><span class="o">;</span>
+<span class="nc">Date</span> <span class="n">date</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="nc">Calendar</span> <span class="n">cal</span> <span class="o">=</span> <span class="nc">Calendar</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+<span class="k">try</span> <span class="o">{</span>
+    <span class="nc">SimpleDateFormat</span> <span class="n">sdf</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">SimpleDateFormat</span><span class="o">(</span><span class="s">"yyyy-MM-dd HH:mm:ss"</span><span class="o">,</span> <span class="nc">Locale</span><span class="o">.</span><span class="na">US</span><span class="o">);</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">sdf</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="n">strDate</span><span class="o">);</span>
+    <span class="n">cal</span><span class="o">.</span><span class="na">setTime</span><span class="o">(</span><span class="n">date</span><span class="o">);</span>
+<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">e</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><strong>设置 Calendar 到某年某月某日</strong></p>
+
+<p>注意点：</p>
+
+<ul>
+  <li>Month 要设为比实际小 1。</li>
+  <li>除显式设置的几个字段外，其它字段之前的值不变；如果不是期待的，可以先调用 clear() 清除。</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nc">Calendar</span> <span class="n">cal</span> <span class="o">=</span> <span class="nc">Calendar</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+<span class="c1">// set to 2015-03-01</span>
+<span class="n">cal</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="mi">2015</span><span class="o">,</span> <span class="mi">3</span> <span class="o">-</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><strong>复制 Calendar</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nc">Calendar</span> <span class="n">calDst</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Calendar</span><span class="o">)</span><span class="n">calSrc</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><strong>求本周、上周、下周的起始时间</strong></p>
+
+<p>做了一个工具类来处理此事（注意：这里计算的一周是从周一到周日，如果要算周天到周六，把获取本周一时括号里的 +1 去掉）：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+</pre></td><td class="rouge-code"><pre><span class="kd">static</span> <span class="kd">class</span> <span class="nc">DateCalcUtil</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">GET_PREVIOUS_MONDAY</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">GET_PREVIOUS_SUNDAY</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">GET_THIS_MONDAY</span> <span class="o">=</span> <span class="mi">2</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">GET_THIS_SUNDAY</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">GET_NEXT_MONDAY</span> <span class="o">=</span> <span class="mi">4</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">GET_NEXT_SUNDAY</span> <span class="o">=</span> <span class="mi">5</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">Calendar</span> <span class="nf">calc</span><span class="o">(</span><span class="nc">Calendar</span> <span class="n">base</span><span class="o">,</span> <span class="kt">int</span> <span class="n">calcType</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// 获取这一周开始基准</span>
+        <span class="kt">int</span> <span class="n">min</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="na">getActualMinimum</span><span class="o">(</span><span class="nc">Calendar</span><span class="o">.</span><span class="na">DAY_OF_WEEK</span><span class="o">);</span>
+        <span class="c1">// 获取当天在这一周内天数</span>
+        <span class="kt">int</span> <span class="n">current</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">Calendar</span><span class="o">.</span><span class="na">DAY_OF_WEEK</span><span class="o">);</span>
+        <span class="nc">Calendar</span> <span class="n">calendar</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Calendar</span><span class="o">)</span><span class="n">base</span><span class="o">.</span><span class="na">clone</span><span class="o">();</span>
+
+        <span class="c1">// 获取本周一</span>
+        <span class="kt">int</span> <span class="n">nCount</span> <span class="o">=</span> <span class="o">(</span><span class="n">current</span> <span class="o">==</span> <span class="n">min</span><span class="o">)</span> <span class="o">?</span> <span class="o">-</span><span class="mi">6</span> <span class="o">:</span> <span class="o">(</span><span class="n">min</span> <span class="o">-</span> <span class="n">current</span> <span class="o">+</span> <span class="mi">1</span><span class="o">);</span>
+
+        <span class="k">switch</span> <span class="o">(</span><span class="n">calcType</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">case</span> <span class="nl">GET_PREVIOUS_MONDAY:</span>
+                <span class="n">nCount</span> <span class="o">-=</span> <span class="mi">7</span><span class="o">;</span>
+                <span class="k">break</span><span class="o">;</span>
+
+            <span class="k">case</span> <span class="nl">GET_PREVIOUS_SUNDAY:</span>
+                <span class="n">nCount</span> <span class="o">-=</span> <span class="mi">1</span><span class="o">;</span>
+                <span class="k">break</span><span class="o">;</span>
+
+            <span class="k">case</span> <span class="nl">GET_THIS_MONDAY:</span>
+                <span class="k">break</span><span class="o">;</span>
+
+            <span class="k">case</span> <span class="nl">GET_THIS_SUNDAY:</span>
+                <span class="n">nCount</span> <span class="o">+=</span> <span class="mi">6</span><span class="o">;</span>
+                <span class="k">break</span><span class="o">;</span>
+
+            <span class="k">case</span> <span class="nl">GET_NEXT_MONDAY:</span>
+                <span class="n">nCount</span> <span class="o">+=</span> <span class="mi">7</span><span class="o">;</span>
+                <span class="k">break</span><span class="o">;</span>
+
+            <span class="k">case</span> <span class="nl">GET_NEXT_SUNDAY:</span>
+                <span class="n">nCount</span> <span class="o">+=</span> <span class="mi">13</span><span class="o">;</span>
+                <span class="k">break</span><span class="o">;</span>
+
+            <span class="k">default</span><span class="o">:</span>
+                <span class="k">break</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="n">calendar</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="nc">Calendar</span><span class="o">.</span><span class="na">DAY_OF_WEEK</span><span class="o">,</span> <span class="n">nCount</span><span class="o">);</span>
+
+        <span class="k">return</span> <span class="n">calendar</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>使用示例如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="c1">// 今天</span>
+<span class="nc">Calendar</span> <span class="n">base</span> <span class="o">=</span> <span class="nc">Calendar</span><span class="o">.</span><span class="na">getInstance</span><span class="o">();</span>
+
+<span class="c1">// 本周</span>
+<span class="nc">Calendar</span> <span class="n">thisMonday</span> <span class="o">=</span> <span class="nc">DateCalcUtil</span><span class="o">.</span><span class="na">calc</span><span class="o">(</span><span class="n">base</span><span class="o">,</span> <span class="nc">DateCalcUtil</span><span class="o">.</span><span class="na">GET_THIS_MONDAY</span><span class="o">);</span>
+<span class="nc">Calendar</span> <span class="n">thisSunday</span> <span class="o">=</span> <span class="nc">DateCalcUtil</span><span class="o">.</span><span class="na">calc</span><span class="o">(</span><span class="n">base</span><span class="o">,</span> <span class="nc">DateCalcUtil</span><span class="o">.</span><span class="na">GET_THIS_SUNDAY</span><span class="o">);</span>
+
+<span class="c1">// 下周</span>
+<span class="nc">Calendar</span> <span class="n">nextMonday</span> <span class="o">=</span> <span class="nc">DateCalcUtil</span><span class="o">.</span><span class="na">calc</span><span class="o">(</span><span class="n">base</span><span class="o">,</span> <span class="nc">DateCalcUtil</span><span class="o">.</span><span class="na">GET_NEXT_MONDAY</span><span class="o">);</span>
+<span class="nc">Calendar</span> <span class="n">nextSunday</span> <span class="o">=</span> <span class="nc">DateCalcUtil</span><span class="o">.</span><span class="na">calc</span><span class="o">(</span><span class="n">base</span><span class="o">,</span> <span class="nc">DateCalcUtil</span><span class="o">.</span><span class="na">GET_NEXT_SUNDAY</span><span class="o">);</span>
+
+<span class="c1">// 上周</span>
+<span class="nc">Calendar</span> <span class="n">previousMonday</span> <span class="o">=</span> <span class="nc">DateCalcUtil</span><span class="o">.</span><span class="na">calc</span><span class="o">(</span><span class="n">base</span><span class="o">,</span> <span class="nc">DateCalcUtil</span><span class="o">.</span><span class="na">GET_PREVIOUS_MONDAY</span><span class="o">);</span>
+<span class="nc">Calendar</span> <span class="n">previousSunday</span> <span class="o">=</span> <span class="nc">DateCalcUtil</span><span class="o">.</span><span class="na">calc</span><span class="o">(</span><span class="n">base</span><span class="o">,</span> <span class="nc">DateCalcUtil</span><span class="o">.</span><span class="na">GET_PREVIOUS_SUNDAY</span><span class="o">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><strong>获取两个日期相差天数</strong></p>
+
+<p>注意点：</p>
+
+<ul>
+  <li>getTimeInMillis 返回的是 0 时区时间，所以有可能把你的时间加减了几个小时，造成计算天数有误，这种方法必须考虑时区因素再运算。</li>
+</ul>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="kt">long</span> <span class="n">daysCount1</span> <span class="o">=</span> <span class="o">(</span><span class="n">calendar1</span><span class="o">.</span><span class="na">getTimeInMillis</span><span class="o">()</span> <span class="o">+</span> <span class="n">calendar1</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">Calendar</span><span class="o">.</span><span class="na">ZONE_OFFSET</span><span class="o">))</span>
+    <span class="o">/</span> <span class="o">(</span><span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>
+<span class="kt">long</span> <span class="n">daysCount2</span> <span class="o">=</span> <span class="o">(</span><span class="n">calendar2</span><span class="o">.</span><span class="na">getTimeInMillis</span><span class="o">()</span> <span class="o">+</span> <span class="n">calendar2</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="nc">Calendar</span><span class="o">.</span><span class="na">ZONE_OFFSET</span><span class="o">))</span>
+    <span class="o">/</span> <span class="o">(</span><span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span> <span class="o">*</span> <span class="mi">1000</span><span class="o">);</span>
+<span class="kt">long</span> <span class="n">dayDiffer</span> <span class="o">=</span> <span class="n">daysCount1</span> <span class="o">-</span> <span class="n">daysCount2</span><span class="o">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+:ET

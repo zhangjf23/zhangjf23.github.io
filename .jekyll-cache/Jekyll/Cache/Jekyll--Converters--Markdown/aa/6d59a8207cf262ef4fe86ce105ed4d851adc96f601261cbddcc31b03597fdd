@@ -1,0 +1,323 @@
+I"(f<p>最近在学习怎么将 Gecko 嵌入到自己的应用程序中，下载了一份比较早一点的源码在对照官方文档痛苦地推进——网上相关资料确实相当缺乏，难道大家都各种 webkit 去了？我的计划是先弄清怎么用，让程序跑起来，然后再根据官方文档结构说明去定制，削减掉不需要的部分，折腾这个移植就花了我不少时间，果断觉得应该跟大家分享之。废话不说,直接上过程。</p>
+
+<h3 id="下载xulrunner源码并编译">下载xulrunner源码并编译。</h3>
+
+<p>我这里用的 1.9.2rc1 版本，对应 firefox 3.6.X。</p>
+
+<p>源码下载地址：<a href="ftp://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2rc1/source/">ftp://ftp.mozilla.org/pub/mozilla.org/xulrunner/releases/1.9.2rc1/source/</a></p>
+
+<p>编译环境 mozilla-build 下载地址：<a href="http://ftp.mozilla.org/pub/mozilla.org/mozilla/libraries/win32/MozillaBuildSetup-1.3.exe">http://ftp.mozilla.org/pub/mozilla.org/mozilla/libraries/win32/MozillaBuildSetup-1.3.exe</a></p>
+
+<p>在解压的源码根目录内新建一个 <code class="highlighter-rouge">.mozconfig</code> 文件，我使用的内容是（其中有用的就是组建目标是 xulrunner，启动 tests 以生成示例程序）：</p>
+
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre><span class="err">mk_add_options</span> <span class="nv">MOZ_CO_PROJECT</span><span class="o">=</span>xulrunner
+<span class="err">mk_add_options</span> <span class="nv">MOZ_OBJDIR</span><span class="o">=</span>@TOPSRCDIR@/obj-xulrunner
+<span class="err">ac_add_options</span> <span class="nv">--enable-application</span><span class="o">=</span>xulrunner
+<span class="c">#Uncomment the following line if you don't want to build JavaXPCOM:
+</span><span class="err">ac_add_options</span> <span class="err">--disable-javaxpcom</span>
+<span class="err">ac_add_options</span> <span class="err">--disable-optimize</span>
+<span class="err">ac_add_options</span> <span class="err">--enable-debug</span>
+<span class="err">ac_add_options</span> <span class="err">--disable-vista-sdk-requirements</span>
+<span class="err">ac_add_options</span> <span class="nv">--with-windows-version</span><span class="o">=</span>600
+<span class="err">ac_add_options</span> <span class="err">--enable-tests</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>运行 mozilla-build 1.3 中的 start-msvc9.bat（因为我使用的是 Visual Studio 2008），切换到源码根目录下，运行 <code class="highlighter-rouge">./configure</code>，然后 <code class="highlighter-rouge">make</code>。等待几个小时（我的是用了四个小时左右）就 OK 了。</p>
+
+<h3 id="注册gregecko运行时环境">注册GRE（Gecko运行时环境）。</h3>
+
+<p>在经过上面第一步的编译后，会在源码根目录下生成名为 dist 的文件夹。<code class="highlighter-rouge">源码根/dist/bin/</code> 目录下现在有 xulrunner.exe 等程序，在 cmd 下运行 <code class="highlighter-rouge">xulrunner.exe --register-global</code> 注册 GRE。这时候实际上就可以跑 <code class="highlighter-rouge">源码根/embedding/tests/winEmbed/winEmbed.exe</code> 程序了，但是我们的目的是在 VC 下自己的工程里嵌入 Gecko，所以需要尝试将这个示例工程 winEmbed 移植到 VC 中。</p>
+
+<h3 id="重点来了将winembed移植到vc中">重点来了，将winEmbed移植到VC中。</h3>
+
+<p>（1）新建工程 <code class="highlighter-rouge">MozillaDemo</code>，将 winEmbed 文件夹下的 resource.h、SMALL.ICO、WebBrowserChrome.cpp、WebBrowserChrome.h、WindowCreator.cpp、WindowCreator.h、winEmbed.cpp、winEmbed.h、winEmbed.ICO、winEmbed.rc 引入工程。编译之，你会发现 N 多错误……</p>
+
+<p>（2）在 VC++ 目录中，include 里加入 <code class="highlighter-rouge">源码根/dist/include</code>，Library 里加入 <code class="highlighter-rouge">源码根/dist/lib</code>，bin 里加入 <code class="highlighter-rouge">源码根/dist/bin</code>。</p>
+
+<p>（3）修改一些编译选项。如在预编译选项里添加 XPCOM_GLUE，XP_WIN，_CRT_SECURE_NO_WARNINGS。将 Project-&gt;Propeties-&gt;Configuration Properties-&gt;C/C++-&gt;Language 下的 Treat wchar_t as Built-in Type 设为 No (/Zc:wchar_t-)，在引入库里添加 xpcomglue.lib。总之让编译命令行看起来像下面这样（具体为何后面解释）：</p>
+
+<p>从项目属性的 C/C++ 里看到的编译命令行：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>/O2 /Oi /GL /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "XPCOM_GLUE" /D "XP_WIN" /D "_CRT_SECURE_NO_WARNINGS" /D "_MBCS" /FD /EHsc /MD /Gy /Zc:wchar_t- /Fo"Release\\" /Fd"Release\vc90.pdb" /W3 /nologo /c /Zi /TP /errorReport:prompt 
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>从项目属性的 Linker 里看到的链接命令行：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>/OUT:"E:\MZ_Test_Code\MozillaDemo\Release\MozillaDemo.exe" /INCREMENTAL:NO /NOLOGO /MANIFEST /MANIFESTFILE:"Release\MozillaDemo.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"e:\MZ_Test_Code\MozillaDemo\Release\MozillaDemo.pdb" /OPT:REF /OPT:ICF /LTCG /DYNAMICBASE /NXCOMPAT /MACHINE:X86 /ERRORREPORT:PROMPT xpcomglue.lib  kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>（4）在 winEmbed.cpp 文件里添加一句</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="cp">#pragma comment(lib, "D:/1.9.2rc1/xulrunner-1.9.2rc1.source/mozilla-1.9.2/profile/dirserviceprovider/standalone/profdirserviceprovidersa_s.lib")
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>大功告成，编译成功 0 warning, 0 error。此时的程序也可以在别的机子上运行，但是需要将 xulrunner.exe 及其依赖文件拷到别的机子上并注册 GRE。</p>
+
+<p>程序运行示意图：</p>
+
+<p><img src="/images/posts/gecko/gecko_embed.gif" width="80%" alt="gecko embed program run demo" /></p>
+
+<p>在自己编译的 xulrunner 环境下跑会产生下面两类错误，先忽略之让程序跑起来。（用官方提供的 xulrunner-sdk 里的程序来注册 GRE 并运行程序无报错）</p>
+
+<p><img src="/images/posts/gecko/gecko_embed_err1.gif" width="80%" alt="gecko embed program run error 1" /></p>
+
+<p><img src="/images/posts/gecko/gecko_embed_err2.gif" width="80%" alt="gecko embed program run error 2" /></p>
+
+<p>至于为什么要做（3）和（4），且听我慢慢道来。</p>
+
+<ol>
+  <li>
+    <p>为什么要添加预编译选项 XPCOM_GLUE</p>
+
+    <p>在原版的 winEmbed 目录下，有 makefile 文件，里面有DEFINES += -DXPCOM_GLUE这么一句。</p>
+  </li>
+  <li>
+    <p>为什么要添加预编译选项 XP_WIN</p>
+
+    <p>在 winEmbed/makefile 文件里，有 include $(DEPTH)/config/autoconf.mk 这么一句，而在这个 autoconf.mk 里可以看到一大串的预编译选项，我试了多番才得出这个非加不可的结论……（试！！！冏！）</p>
+  </li>
+  <li>
+    <p>为什么要添加引入库 xpcomglue.lib，为什么要有（4）步骤</p>
+
+    <p>在 winEmbed/makefile 文件里，有</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>LIBS = \
+$(DEPTH)/profile/dirserviceprovider/standalone/$(LIB_PREFIX)profdirserviceprovidersa_s.$(LIB_SUFFIX) \
+$(XPCOM_STANDALONE_GLUE_LDOPTS) \
+$(NULL)
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>这么一段，很显然提示我们引入库 profdirserviceprovidersa_s，然后在 autoconf.mk 文件里可以看到 XPCOM_STANDALONE_GLUE_LDOPTS = $(LIBXUL_DIST)/lib/$(LIB_PREFIX)xpcomglue.$(LIB_SUFFIX) 这么一个定义，所以也需要引入库 xpcomglue。</p>
+  </li>
+  <li>
+    <p>为什么要将 Project-&gt;Propeties-&gt;Configuration Properties-&gt;C/C++-&gt;Language 下的 Treat wchar_t as Built-in Type 设为 No (/Zc:wchar_t-)</p>
+
+    <p>很简单，因为编译报错提示呗……</p>
+
+    <p>不执行这些操作将产生的错误：</p>
+
+    <p>不将 Project-&gt;Propeties-&gt;Configuration Properties-&gt;C/C++-&gt;Language 下的 Treat wchar_t as Built-in Type 设为 No (/Zc:wchar_t-) 将报错</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>WebBrowserChrome.obj : error LNK2001: unresolved external symbol "public: wchar_t const * __thiscall nsAString::BeginReading(void)const " (?BeginReading@nsAString@@QBEPB_WXZ)
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>拿掉预编译选项 <code class="highlighter-rouge">XP_WIN</code> 会产生错误</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre>1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "public: void __thiscall nsCOMPtr_base::assign_from_helper(class nsCOMPtr_helper const &amp;,struct nsID const &amp;)" (?assign_from_helper@nsCOMPtr_base@@QAEXABVnsCOMPtr_helper@@ABUnsID@@@Z)
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "public: void __thiscall nsCOMPtr_base::assign_from_qi(class nsQueryInterface,struct nsID const &amp;)" (?assign_from_qi@nsCOMPtr_base@@QAEXVnsQueryInterface@@ABUnsID@@@Z)
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "public: void __thiscall nsCOMPtr_base::assign_with_AddRef(class nsISupports *)" (?assign_with_AddRef@nsCOMPtr_base@@QAEXPAVnsISupports@@@Z)
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "public: virtual unsigned int __thiscall nsCreateInstanceByContractID::operator()(struct nsID const &amp;,void * *)const " (??RnsCreateInstanceByContractID@@UBEIABUnsID@@PAPAX@Z)
+1&gt;WindowCreator.obj : error LNK2001: unresolved external symbol "unsigned int __cdecl NS_TableDrivenQI(void *,struct QITableEntry const *,struct nsID const &amp;,void * *)" (?NS_TableDrivenQI@@YAIPAXPBUQITableEntry@@ABUnsID@@PAPAX@Z)
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol "public: void __thiscall nsCOMPtr_base::assign_from_gs_contractid_with_error(class nsGetServiceByContractIDWithError const &amp;,struct nsID const &amp;)" (?assign_from_gs_contractid_with_error@nsCOMPtr_base@@QAEXABVnsGetServiceByContractIDWithError@@ABUnsID@@@Z)
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol "public: void __thiscall nsCOMPtr_base::assign_from_gs_contractid(class nsGetServiceByContractID,struct nsID const &amp;)" (?assign_from_gs_contractid@nsCOMPtr_base@@QAEXVnsGetServiceByContractID@@ABUnsID@@@Z)
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol "public: virtual unsigned int __thiscall nsGetInterface::operator()(struct nsID const &amp;,void * *)const " (??RnsGetInterface@@UBEIABUnsID@@PAPAX@Z)
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>拿掉预编译选项 <code class="highlighter-rouge">XPCOM_GLUE</code> 会产生错误</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre>1&gt;.\winEmbed.cpp(48) : error C2146: syntax error : missing ';' before identifier 'XRE_InitEmbedding'
+1&gt;.\winEmbed.cpp(48) : error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+1&gt;.\winEmbed.cpp(48) : error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+1&gt;.\winEmbed.cpp(48) : error C2365: 'XRE_InitEmbedding' : redefinition; previous definition was 'function'
+1&gt;        D:\1.9.2rc1\xulrunner-1.9.2rc1.source\mozilla-1.9.2\dist\include\nsXULAppAPI.h(355) : see declaration of 'XRE_InitEmbedding'
+1&gt;.\winEmbed.cpp(49) : error C2146: syntax error : missing ';' before identifier 'XRE_TermEmbedding'
+1&gt;.\winEmbed.cpp(49) : error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+1&gt;.\winEmbed.cpp(49) : error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+1&gt;.\winEmbed.cpp(49) : error C2365: 'XRE_TermEmbedding' : redefinition; previous definition was 'function'
+1&gt;        D:\1.9.2rc1\xulrunner-1.9.2rc1.source\mozilla-1.9.2\dist\include\nsXULAppAPI.h(390) : see declaration of 'XRE_TermEmbedding'
+1&gt;.\winEmbed.cpp(191) : error C3861: 'XPCOMGlueStartup': identifier not found
+1&gt;.\winEmbed.cpp(209) : error C2659: '=' : function as left operand
+1&gt;.\winEmbed.cpp(209) : error C2146: syntax error : missing ';' before identifier 'GetProcAddress'
+1&gt;.\winEmbed.cpp(210) : warning C4551: function call missing argument list
+1&gt;.\winEmbed.cpp(216) : error C2659: '=' : function as left operand
+1&gt;.\winEmbed.cpp(216) : error C2146: syntax error : missing ';' before identifier 'GetProcAddress'
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>拿掉引入库 <code class="highlighter-rouge">xpcomglue.lib</code> 会产生错误</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+</pre></td><td class="rouge-code"><pre>1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol _NS_StringContainerFinish
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol _NS_StringContainerFinish
+1&gt;profdirserviceprovidersa_s.lib(nsProfileLock.obj) : error LNK2001: unresolved external symbol _NS_StringContainerFinish
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol _NS_CStringCopy
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "public: unsigned short const * __thiscall nsAString::BeginReading(void)const " (?BeginReading@nsAString@@QBEPBGXZ)
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol "public: unsigned short const * __thiscall nsAString::BeginReading(void)const " (?BeginReading@nsAString@@QBEPBGXZ)
+1&gt;profdirserviceprovidersa_s.lib(nsProfileLock.obj) : error LNK2001: unresolved external symbol "public: unsigned short const * __thiscall nsAString::BeginReading(void)const " (?BeginReading@nsAString@@QBEPBGXZ)
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol _NS_StringContainerInit
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol _NS_StringContainerInit
+1&gt;profdirserviceprovidersa_s.lib(nsProfileLock.obj) : error LNK2001: unresolved external symbol _NS_StringContainerInit
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol _NS_CStringSetDataRange
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol _NS_CStringToUTF16
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol _NS_CStringSetData
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "public: void __fastcall nsCOMPtr_base::assign_from_helper(class nsCOMPtr_helper const &amp;,struct nsID const &amp;)" (?assign_from_helper@nsCOMPtr_base@@QAIXABVnsCOMPtr_helper@@ABUnsID@@@Z)
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "public: void __fastcall nsCOMPtr_base::assign_from_qi(class nsQueryInterface,struct nsID const &amp;)" (?assign_from_qi@nsCOMPtr_base@@QAIXVnsQueryInterface@@ABUnsID@@@Z)
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "public: void __fastcall nsCOMPtr_base::assign_with_AddRef(class nsISupports *)" (?assign_with_AddRef@nsCOMPtr_base@@QAIXPAVnsISupports@@@Z)
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "public: __thiscall nsCOMPtr_base::~nsCOMPtr_base(void)" (??1nsCOMPtr_base@@QAE@XZ)
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol _NS_CStringContainerInit
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol _NS_CStringContainerInit
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol _NS_CStringContainerFinish
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol _NS_CStringContainerFinish
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "public: virtual unsigned int __fastcall nsCreateInstanceByContractID::operator()(struct nsID const &amp;,void * *)const " (??RnsCreateInstanceByContractID@@UBIIABUnsID@@PAPAX@Z)
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol _NS_CStringGetData
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "protected: void __thiscall nsSupportsWeakReference::ClearWeakReferences(void)" (?ClearWeakReferences@nsSupportsWeakReference@@IAEXXZ)
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "public: virtual unsigned int __stdcall nsSupportsWeakReference::GetWeakReference(class nsIWeakReference * *)" (?GetWeakReference@nsSupportsWeakReference@@UAGIPAPAVnsIWeakReference@@@Z)
+1&gt;WebBrowserChrome.obj : error LNK2001: unresolved external symbol "class nsIWeakReference * __cdecl NS_GetWeakReference(class nsISupports *,unsigned int *)" (?NS_GetWeakReference@@YAPAVnsIWeakReference@@PAVnsISupports@@PAI@Z)
+1&gt;WindowCreator.obj : error LNK2001: unresolved external symbol "unsigned int __fastcall NS_TableDrivenQI(void *,struct QITableEntry const *,struct nsID const &amp;,void * *)" (?NS_TableDrivenQI@@YIIPAXPBUQITableEntry@@ABUnsID@@PAPAX@Z)
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol "unsigned int __fastcall NS_TableDrivenQI(void *,struct QITableEntry const *,struct nsID const &amp;,void * *)" (?NS_TableDrivenQI@@YIIPAXPBUQITableEntry@@ABUnsID@@PAPAX@Z)
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol "public: char const * __thiscall nsACString::BeginReading(void)const " (?BeginReading@nsACString@@QBEPBDXZ)
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol _GRE_GetGREPathWithProperties
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol _NS_NewNativeLocalFile
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol "public: void __fastcall nsCOMPtr_base::assign_from_gs_contractid_with_error(class nsGetServiceByContractIDWithError const &amp;,struct nsID const &amp;)" (?assign_from_gs_contractid_with_error@nsCOMPtr_base@@QAIXABVnsGetServiceByContractIDWithError@@ABUnsID@@@Z)
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol "public: void __fastcall nsCOMPtr_base::assign_from_gs_contractid(class nsGetServiceByContractID,struct nsID const &amp;)" (?assign_from_gs_contractid@nsCOMPtr_base@@QAIXVnsGetServiceByContractID@@ABUnsID@@@Z)
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol _NS_CStringContainerInit2
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol _NS_CStringContainerInit2
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol _XPCOMGlueStartup
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol "public: virtual unsigned int __fastcall nsGetInterface::operator()(struct nsID const &amp;,void * *)const " (??RnsGetInterface@@UBIIABUnsID@@PAPAX@Z)
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol _NS_StringContainerInit2
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol _NS_StringContainerInit2
+1&gt;profdirserviceprovidersa_s.lib(nsProfileLock.obj) : error LNK2001: unresolved external symbol _NS_StringContainerInit2
+1&gt;winEmbed.obj : error LNK2001: unresolved external symbol _NS_UTF16ToCString
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol _NS_DebugBreak
+1&gt;profdirserviceprovidersa_s.lib(nsProfileLock.obj) : error LNK2001: unresolved external symbol _NS_DebugBreak
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol _NS_LogAddRef
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol _NS_LogRelease
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol _NS_StringGetData
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol _NS_LogCOMPtrRelease
+1&gt;profdirserviceprovidersa_s.lib(nsProfileLock.obj) : error LNK2001: unresolved external symbol _NS_LogCOMPtrRelease
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol _NS_LogCOMPtrAddRef
+1&gt;profdirserviceprovidersa_s.lib(nsProfileLock.obj) : error LNK2001: unresolved external symbol _NS_LogCOMPtrAddRef
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol "public: unsigned int __fastcall nsGetServiceByContractIDWithError::operator()(struct nsID const &amp;,void * *)const " (??RnsGetServiceByContractIDWithError@@QBIIABUnsID@@PAPAX@Z)
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol "public: unsigned int __fastcall nsQueryInterface::operator()(struct nsID const &amp;,void * *)const " (??RnsQueryInterface@@QBIIABUnsID@@PAPAX@Z)
+1&gt;profdirserviceprovidersa_s.lib(nsProfileLock.obj) : error LNK2001: unresolved external symbol "public: unsigned int __fastcall nsQueryInterface::operator()(struct nsID const &amp;,void * *)const " (??RnsQueryInterface@@QBIIABUnsID@@PAPAX@Z)
+1&gt;profdirserviceprovidersa_s.lib(nsProfileDirServiceProvider.obj) : error LNK2001: unresolved external symbol "public: unsigned int __fastcall nsGetServiceByContractID::operator()(struct nsID const &amp;,void * *)const " (??RnsGetServiceByContractID@@QBIIABUnsID@@PAPAX@Z)
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>添加预编译选项 _CRT_SECURE_NO_WARNINGS 用来消除警告</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>1&gt;e:\mz_test_code\mozillademo\mozillademo\webbrowserchrome.cpp(375) : warning C4996: '_snprintf': This function or variable may be unsafe. Consider using _snprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+1&gt;        d:\program files\microsoft visual studio 9.0\vc\include\stdio.h(358) : see declaration of '_snprintf'
+1&gt;WindowCreator.cpp
+1&gt;winEmbed.cpp
+1&gt;e:\mz_test_code\mozillademo\mozillademo\winembed.cpp(163) : warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+1&gt;        d:\program files\microsoft visual studio 9.0\vc\include\string.h(157) : see declaration of 'strncpy'
+1&gt;e:\mz_test_code\mozillademo\mozillademo\winembed.cpp(198) : warning C4996: '_snprintf': This function or variable may be unsafe. Consider using _snprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+1&gt;        d:\program files\microsoft visual studio 9.0\vc\include\stdio.h(358) : see declaration of '_snprintf'
+1&gt;e:\mz_test_code\mozillademo\mozillademo\winembed.cpp(1086) : warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+1&gt;        d:\program files\microsoft visual studio 9.0\vc\include\string.h(157) : see declaration of 'strncpy'
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>winEmbed.cpp文件里添加#pragma comment(lib, “D:/1.9.2rc1/xulrunner-1.9.2rc1.source/mozilla-1.9.2/profile/dirserviceprovider/standalone/profdirserviceprovidersa_s.lib”)</p>
+
+    <p>否则将产生错误</p>
+
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>1&gt;winEmbed.obj : error LNK2019: unresolved external symbol "unsigned int __cdecl NS_NewProfileDirServiceProvider(int,class nsProfileDirServiceProvider * *)" (?NS_NewProfileDirServiceProvider@@YAIHPAPAVnsProfileDirServiceProvider@@@Z) referenced in function "unsigned int __cdecl StartupProfile(void)" (&lt;a href="mailto:?StartupProfile@@YAIXZ"&gt;?StartupProfile@@YAIXZ&lt;/a&gt;)
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ol>
+:ET

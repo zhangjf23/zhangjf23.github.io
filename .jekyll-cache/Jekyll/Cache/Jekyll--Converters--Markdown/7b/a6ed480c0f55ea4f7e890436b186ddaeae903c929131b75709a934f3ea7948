@@ -1,0 +1,283 @@
+I"�0<p>本文是对《Effective C++》的”Item 4: Make sure that objects are initialized before they’re used”的笔记和验证。</p>
+
+<h3 id="结论">结论</h3>
+
+<ol>
+  <li>在进入构造函数体之前，数据成员的初始化就已完成。</li>
+  <li>数据成员的初始化顺序取决于声明顺序。</li>
+</ol>
+
+<h3 id="结论-1-证明">结论 1 证明</h3>
+
+<p>证明代码片段：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+</pre></td><td class="rouge-code"><pre><span class="cp">#include &lt;stdio.h&gt;
+</span>
+<span class="k">class</span> <span class="nc">CA</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="n">CA</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">pName</span> <span class="o">=</span> <span class="s">"default"</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"CA::CA(const char*) pName = %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">pName</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">CA</span><span class="p">(</span><span class="k">const</span> <span class="n">CA</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"CA::CA(const CA&amp;)</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">CA</span><span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="n">CA</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"CA::operator =</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">CTest</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="n">CTest</span><span class="p">(</span><span class="n">CA</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"CTest::CTest(CA)</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+        <span class="n">m_a</span> <span class="o">=</span> <span class="n">a</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="nl">private:</span>
+    <span class="n">CA</span> <span class="n">m_a</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">CA</span> <span class="n">a</span><span class="p">(</span><span class="s">"special"</span><span class="p">);</span>
+    <span class="n">CTest</span> <span class="n">test</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>输出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>CA::CA(const char*) pName = special
+CA::CA(const char*) pName = default
+CTest::CTest(CA)
+CA::operator =
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>这已经能很好地证明结论 1。而进入函数体之前的数据成员的初始化如何控制呢？答案就是——成员初始化列表。</p>
+
+<p>让我们来看看将<code class="highlighter-rouge">CTest</code>的构造函数改成使用成员初始化列表以后的情况：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>    <span class="n">CTest</span><span class="p">(</span><span class="n">CA</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">)</span><span class="o">:</span> <span class="n">m_a</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"CTest::CTest(CA)</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>输出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>CA::CA(const char*) pName = special
+CA::CA(const CA&amp;)
+CTest::CTest(CA)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>在成员初始化列表的指定下调用了<code class="highlighter-rouge">CA</code>的复制构造函数。这两种方式的差别相当于<code class="highlighter-rouge">CA a; a = b;</code>与<code class="highlighter-rouge">CA a(b);</code>的差别，很显然使用成员初始化列表效率要更高一点。</p>
+
+<p>PS: 顺便吐槽一下很多建议使用成员初始化列表而不讲为什么的老师和书，你们多讲一句能费多大劲 T.T。</p>
+
+<h3 id="结论-2-证明">结论 2 证明</h3>
+
+<p>证明代码片段：</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+</pre></td><td class="rouge-code"><pre><span class="cp">#include &lt;stdio.h&gt;
+</span>
+<span class="k">class</span> <span class="nc">CA</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="n">CA</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">pName</span> <span class="o">=</span> <span class="s">"default"</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"CA::CA(const char*) pName = %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">pName</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">CA</span><span class="p">(</span><span class="k">const</span> <span class="n">CA</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"CA::CA(const CA&amp;)</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">CA</span><span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="n">CA</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"CA::operator =</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">CB</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="n">CB</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">pName</span> <span class="o">=</span> <span class="s">"default"</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"CB::CB(const char*) pName = %s</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">pName</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">CB</span><span class="p">(</span><span class="k">const</span> <span class="n">CB</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"CB::CB(const CB&amp;)</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">CB</span><span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span> <span class="p">(</span><span class="k">const</span> <span class="n">CB</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"CB::operator =</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">CTest</span>
+<span class="p">{</span>
+<span class="nl">public:</span>
+    <span class="n">CTest</span><span class="p">(</span><span class="n">CA</span><span class="o">&amp;</span> <span class="n">a</span><span class="p">,</span> <span class="n">CB</span><span class="o">&amp;</span> <span class="n">b</span><span class="p">)</span><span class="o">:</span> <span class="n">m_b</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">m_a</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"CTest::CTest(CA)</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="nl">private:</span>
+    <span class="n">CA</span> <span class="n">m_a</span><span class="p">;</span>
+    <span class="n">CB</span> <span class="n">m_b</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">CA</span> <span class="n">a</span><span class="p">(</span><span class="s">"special A"</span><span class="p">);</span>
+    <span class="n">CB</span> <span class="n">b</span><span class="p">(</span><span class="s">"special B"</span><span class="p">);</span>
+    <span class="n">CTest</span> <span class="n">test</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>输出：</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>CA::CA(const char*) pName = special A
+CB::CB(const char*) pName = special B
+CA::CA(const CA&amp;)
+CB::CB(const CB&amp;)
+CTest::CTest(CA)
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>可以看出在成员初始化列表中的顺序并无作用，对成员的初始化还是以声明顺序为依据。</p>
+:ET

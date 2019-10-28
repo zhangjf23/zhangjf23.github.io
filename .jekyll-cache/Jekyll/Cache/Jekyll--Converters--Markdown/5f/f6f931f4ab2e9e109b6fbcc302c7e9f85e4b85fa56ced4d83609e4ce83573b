@@ -1,0 +1,633 @@
+I"D�<p>前天遇到了一个 NullPointerException，触发的代码类似下面这样：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">long</span> <span class="nf">test</span><span class="o">(</span><span class="kt">long</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Long</span> <span class="n">value</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="c1">// ...</span>
+        <span class="n">test</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>main 方法里的代码实际上相当于调用 <code class="highlighter-rouge">test(null);</code>，为什么不直接这样写呢？因为编译不过，会报 <code class="highlighter-rouge">错误: 不兼容的类型: &lt;空值&gt;无法转换为long</code>。</p>
+
+<h2 id="抛出问题">抛出问题</h2>
+
+<p>运行时提示 <code class="highlighter-rouge">test(value);</code> 这一行抛出 NullPointerException，但是看着以上代码会有些许困惑：以上代码里一个对象方法都没有调用啊，NullPointerException 从何而来？</p>
+
+<h2 id="原因分析">原因分析</h2>
+
+<p>这时，如果留意到 test 方法接受的参数是 long 类型，而我们传入的是 Long 类型（虽然其实是 null），就会想到这会经历一次从类型 Long 到基本数据类型 long 的自动拆箱过程，那会不会是这个过程中抛出的 NullPointerException 呢？因为以前只知道 Java 为一些基础数据类型与对应的包装器类型之间提供了自动装箱拆箱机制，而并不知这机制的具体实现方法是怎么样的，正好学习一下。</p>
+
+<p>用命令 <code class="highlighter-rouge">javap -c Test</code> 将以上代码编译出的 Test.class 文件进行反汇编，可以看到如下输出：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+</pre></td><td class="rouge-code"><pre><span class="nc">Compiled</span> <span class="n">from</span> <span class="s">"Test.java"</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="nf">Test</span><span class="o">();</span>
+    <span class="nl">Code:</span>
+       <span class="mi">0</span><span class="o">:</span> <span class="n">aload_0</span>
+       <span class="mi">1</span><span class="o">:</span> <span class="n">invokespecial</span> <span class="err">#</span><span class="mi">1</span>                  <span class="c1">// Method java/lang/Object."&lt;init&gt;":()V</span>
+       <span class="mi">4</span><span class="o">:</span> <span class="k">return</span>
+
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">long</span> <span class="nf">test</span><span class="o">(</span><span class="kt">long</span><span class="o">);</span>
+    <span class="nl">Code:</span>
+       <span class="mi">0</span><span class="o">:</span> <span class="n">lload_0</span>
+       <span class="mi">1</span><span class="o">:</span> <span class="n">lreturn</span>
+
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">[]);</span>
+    <span class="nl">Code:</span>
+       <span class="mi">0</span><span class="o">:</span> <span class="n">aconst_null</span>
+       <span class="mi">1</span><span class="o">:</span> <span class="n">astore_1</span>
+       <span class="mi">2</span><span class="o">:</span> <span class="n">aload_1</span>
+       <span class="mi">3</span><span class="o">:</span> <span class="n">invokevirtual</span> <span class="err">#</span><span class="mi">2</span>                  <span class="c1">// Method java/lang/Long.longValue:()J</span>
+       <span class="mi">6</span><span class="o">:</span> <span class="n">invokestatic</span>  <span class="err">#</span><span class="mi">3</span>                  <span class="c1">// Method test:(J)J</span>
+       <span class="mi">9</span><span class="o">:</span> <span class="n">pop2</span>
+      <span class="mi">10</span><span class="o">:</span> <span class="k">return</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>从以上字节码及对应的注释可以看出，<code class="highlighter-rouge">test(value);</code> 这一行被编译后等同于如下代码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="kt">long</span> <span class="n">primitive</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="na">longValue</span><span class="o">();</span>
+<span class="n">test</span><span class="o">(</span><span class="n">promitive</span><span class="o">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>相比实际代码，多出的 <code class="highlighter-rouge">long primitive = value.longValue();</code> 这一行看起来就是自动拆箱的过程了，而我们传入的 <code class="highlighter-rouge">value</code> 为 null，<code class="highlighter-rouge">value.longValue()</code> 会抛出 NullPointerException，一切就解释得通了。用更简洁的代码表达出了更丰富的含义，这就是所谓的语法糖了。</p>
+
+<h2 id="证实猜想">证实猜想</h2>
+
+<p>那么我们上面得出的自动拆箱机制的结论是否正确呢？选择一种其它基本数据类型，比如 int，来佐证一下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Integer</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">primitive</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>反汇编后对应的字节码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+</pre></td><td class="rouge-code"><pre><span class="nc">Compiled</span> <span class="n">from</span> <span class="s">"Test.java"</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="nf">Test</span><span class="o">();</span>
+    <span class="nl">Code:</span>
+       <span class="mi">0</span><span class="o">:</span> <span class="n">aload_0</span>
+       <span class="mi">1</span><span class="o">:</span> <span class="n">invokespecial</span> <span class="err">#</span><span class="mi">1</span>                  <span class="c1">// Method java/lang/Object."&lt;init&gt;":()V</span>
+       <span class="mi">4</span><span class="o">:</span> <span class="k">return</span>
+
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">[]);</span>
+    <span class="nl">Code:</span>
+       <span class="mi">0</span><span class="o">:</span> <span class="n">bipush</span>        <span class="mi">10</span>
+       <span class="mi">2</span><span class="o">:</span> <span class="n">invokestatic</span>  <span class="err">#</span><span class="mi">2</span>                  <span class="c1">// Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;</span>
+       <span class="mi">5</span><span class="o">:</span> <span class="n">astore_1</span>
+       <span class="mi">6</span><span class="o">:</span> <span class="n">aload_1</span>
+       <span class="mi">7</span><span class="o">:</span> <span class="n">invokevirtual</span> <span class="err">#</span><span class="mi">3</span>                  <span class="c1">// Method java/lang/Integer.intValue:()I</span>
+      <span class="mi">10</span><span class="o">:</span> <span class="n">istore_2</span>
+      <span class="mi">11</span><span class="o">:</span> <span class="k">return</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>由以上字节码我们可以印证下文里的知识点了。</p>
+
+<h2 id="自动装箱与拆箱">自动装箱与拆箱</h2>
+
+<p>自动装箱与拆箱是 Java 1.5 引入的新特性，是一种语法糖。</p>
+
+<p>在此之前，我们要创建一个值为 10 的 Integer 对象，只能写作：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nc">Integer</span> <span class="n">value</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Integer</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>而现在，我们可以更方便地写为：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="nc">Integer</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="定义与实现机制">定义与实现机制</h3>
+
+<p><strong>自动装箱</strong>，是指从基本数据类型值到其对应的包装类对象的自动转换。比如 <code class="highlighter-rouge">Integer value = 10;</code>，是通过调用 Integer.valueOf 方法实现转换的。</p>
+
+<p><strong>自动拆箱</strong>，是指从包装类对象到其对应的基本数据类型值的自动转换。比如 <code class="highlighter-rouge">int primitive = value;</code>，是通过调用 Integer.intValue 方法实现转换的。</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>基本数据类型</th>
+      <th>包装类型</th>
+      <th>装箱方法</th>
+      <th>拆箱方法</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>boolean</td>
+      <td>Boolean</td>
+      <td>Boolean.valueOf(boolean)</td>
+      <td>Boolean.booleanValue()</td>
+    </tr>
+    <tr>
+      <td>byte</td>
+      <td>Byte</td>
+      <td>Byte.valueOf(byte)</td>
+      <td>Byte.byteValue()</td>
+    </tr>
+    <tr>
+      <td>char</td>
+      <td>Character</td>
+      <td>Character.valueOf(char)</td>
+      <td>Character.charValue()</td>
+    </tr>
+    <tr>
+      <td>short</td>
+      <td>Short</td>
+      <td>Short.valueOf(short)</td>
+      <td>Short.shortValue()</td>
+    </tr>
+    <tr>
+      <td>int</td>
+      <td>Integer</td>
+      <td>Integer.valueOf(int)</td>
+      <td>Integer.intValue()</td>
+    </tr>
+    <tr>
+      <td>long</td>
+      <td>Long</td>
+      <td>Long.valueOf(long)</td>
+      <td>Long.longValue()</td>
+    </tr>
+    <tr>
+      <td>float</td>
+      <td>Float</td>
+      <td>Float.valueOf(float)</td>
+      <td>Float.floatValue()</td>
+    </tr>
+    <tr>
+      <td>double</td>
+      <td>Double</td>
+      <td>Double.valueOf(double)</td>
+      <td>Double.doubleValue()</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="发生时机">发生时机</h3>
+
+<p>自动装箱与拆箱主要发生在以下四种时机：</p>
+
+<ol>
+  <li>
+    <p>赋值时；</p>
+  </li>
+  <li>
+    <p>比较时；</p>
+  </li>
+  <li>
+    <p>算术运算时；</p>
+  </li>
+  <li>
+    <p>方法调用时。</p>
+  </li>
+</ol>
+
+<h3 id="常见应用场景">常见应用场景</h3>
+
+<p><strong>Case 1:</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nc">Integer</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span> <span class="c1">// 自动装箱（赋值时）</span>
+
+<span class="kt">int</span> <span class="n">primitive</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span> <span class="c1">// 自动拆箱（方法调用时）</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><strong>Case 2:</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="nc">Integer</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span>
+<span class="c1">// ...</span>
+<span class="k">if</span> <span class="o">(</span><span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">1000</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 自动拆箱（比较时）</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><strong>Case 3:</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nc">List</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span> <span class="c1">// 自动装箱（方法调用时）</span>
+
+<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// 自动拆箱（赋值时）</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><em>注：集合（Collections）里不能直接放入原始类型，集合只接收对象。</em></p>
+
+<p><strong>Case 4:</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre><span class="nc">ThreadLocal</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">local</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ThreadLocal</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;();</span>
+<span class="n">local</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span> <span class="c1">// 自动装箱（方法调用时）</span>
+
+<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">local</span><span class="o">.</span><span class="na">get</span><span class="o">();</span> <span class="c1">// 自动拆箱（赋值时）</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><em>注：ThreadLocal 不能存储基本数据类型，只接收引用类型。</em></p>
+
+<p><strong>Case 5:</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="kd">public</span> <span class="kt">void</span> <span class="nf">fun1</span><span class="o">(</span><span class="nc">Integer</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">fun2</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">//</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">test</span><span class="o">()</span> <span class="o">{</span>
+    <span class="n">fun1</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span> <span class="c1">// 自动装箱（方法调用时）</span>
+
+    <span class="nc">Integer</span> <span class="n">value</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+    <span class="n">fun2</span><span class="o">(</span><span class="n">value</span><span class="o">);</span> <span class="c1">// 自动拆箱（方法调用时）</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><strong>Case 6:</strong></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="nc">Integer</span> <span class="n">v1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Integer</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+<span class="nc">Integer</span> <span class="n">v2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Integer</span><span class="o">(</span><span class="mi">20</span><span class="o">);</span>
+<span class="kt">int</span> <span class="n">v3</span> <span class="o">=</span> <span class="mi">30</span><span class="o">;</span>
+
+<span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">+</span> <span class="n">v2</span><span class="o">;</span> <span class="c1">// 自动拆箱（算术运算时）</span>
+<span class="n">sum</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">+</span> <span class="mi">30</span><span class="o">;</span> <span class="c1">// 自动拆箱（算术运算时）</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="相关知识点">相关知识点</h3>
+
+<h4 id="比较">比较</h4>
+
+<p>除 <code class="highlighter-rouge">==</code> 以外，包装类对象与基本数据类型值的比较，包装类对象与包装类对象之间的比较，都是自动拆箱后对基本数据类型值进行比较，所以，<strong>要注意这些类型间进行比较时自动拆箱可能引发的 NullPointerException</strong>。</p>
+
+<p><code class="highlighter-rouge">==</code> 比较特殊，因为可以用于判断左右是否为同一对象，所以两个包装类对象之间 <code class="highlighter-rouge">==</code>，会用于判断是否为同一对象，而不会进行自动拆箱操作；包装类对象与基本数据类型值之间 <code class="highlighter-rouge">==</code>，会自动拆箱。</p>
+
+<p>示例代码：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="nc">Integer</span> <span class="n">v1</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Integer</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+<span class="nc">Integer</span> <span class="n">v2</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Integer</span><span class="o">(</span><span class="mi">20</span><span class="o">);</span>
+
+<span class="k">if</span> <span class="o">(</span><span class="n">v1</span> <span class="o">&lt;</span> <span class="n">v2</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 自动拆箱</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="k">if</span> <span class="o">(</span><span class="n">v1</span> <span class="o">==</span> <span class="n">v2</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 不拆箱</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="k">if</span> <span class="o">(</span><span class="n">v1</span> <span class="o">==</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 自动拆箱</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h4 id="缓存">缓存</h4>
+
+<p>Java 为整型值包装类 Byte、Character、Short、Integer、Long 设置了缓存，用于存储一定范围内的值，详细如下：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>类型</th>
+      <th>缓存值范围</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Byte</td>
+      <td>-128 ~ 127</td>
+    </tr>
+    <tr>
+      <td>Character</td>
+      <td>0 ~ 127</td>
+    </tr>
+    <tr>
+      <td>Short</td>
+      <td>-128 ~ 127</td>
+    </tr>
+    <tr>
+      <td>Integer</td>
+      <td>-128 ~ 127（可配置）</td>
+    </tr>
+    <tr>
+      <td>Long</td>
+      <td>-128 ~ 127</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>在一些情况下，比如自动装箱时，如果值在缓存值范围内，将不创建新对象，直接从缓存里取出对象返回，比如：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+</pre></td><td class="rouge-code"><pre><span class="nc">Integer</span> <span class="n">v1</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+<span class="nc">Integer</span> <span class="n">v2</span> <span class="o">=</span> <span class="mi">10</span><span class="o">;</span>
+<span class="nc">Integer</span> <span class="n">v3</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Integer</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+<span class="nc">Integer</span> <span class="n">v4</span> <span class="o">=</span> <span class="mi">128</span><span class="o">;</span>
+<span class="nc">Integer</span> <span class="n">v5</span> <span class="o">=</span> <span class="mi">128</span><span class="o">;</span>
+<span class="nc">Integer</span> <span class="n">v6</span> <span class="o">=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="mi">10</span><span class="o">);</span>
+
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">v1</span> <span class="o">==</span> <span class="n">v2</span><span class="o">);</span> <span class="c1">// true</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">v1</span> <span class="o">==</span> <span class="n">v3</span><span class="o">);</span> <span class="c1">// false</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">v4</span> <span class="o">==</span> <span class="n">v5</span><span class="o">);</span> <span class="c1">// false</span>
+<span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">v1</span> <span class="o">==</span> <span class="n">v6</span><span class="o">);</span> <span class="c1">// true</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p><strong>缓存实现机制：</strong></p>
+
+<p>这里使用了设计模式享元模式。</p>
+
+<p>以 Short 类实现源码为例：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="rouge-code"><pre><span class="c1">// ...</span>
+<span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">Short</span> <span class="kd">extends</span> <span class="nc">Number</span> <span class="kd">implements</span> <span class="nc">Comparable</span><span class="o">&lt;</span><span class="nc">Short</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">ShortCache</span> <span class="o">{</span>
+        <span class="kd">private</span> <span class="nf">ShortCache</span><span class="o">(){}</span>
+
+        <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Short</span> <span class="n">cache</span><span class="o">[]</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Short</span><span class="o">[-(-</span><span class="mi">128</span><span class="o">)</span> <span class="o">+</span> <span class="mi">127</span> <span class="o">+</span> <span class="mi">1</span><span class="o">];</span>
+
+        <span class="kd">static</span> <span class="o">{</span>
+            <span class="k">for</span><span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">cache</span><span class="o">.</span><span class="na">length</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span>
+                <span class="n">cache</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Short</span><span class="o">((</span><span class="kt">short</span><span class="o">)(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">128</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="c1">// ...</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">Short</span> <span class="nf">valueOf</span><span class="o">(</span><span class="kt">short</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="kt">int</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">128</span><span class="o">;</span>
+        <span class="kt">int</span> <span class="n">sAsInt</span> <span class="o">=</span> <span class="n">s</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">sAsInt</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="mi">128</span> <span class="o">&amp;&amp;</span> <span class="n">sAsInt</span> <span class="o">&lt;=</span> <span class="mi">127</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// must cache</span>
+            <span class="k">return</span> <span class="nc">ShortCache</span><span class="o">.</span><span class="na">cache</span><span class="o">[</span><span class="n">sAsInt</span> <span class="o">+</span> <span class="n">offset</span><span class="o">];</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Short</span><span class="o">(</span><span class="n">s</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>在第一次调用到 <code class="highlighter-rouge">Short.valueOf(short)</code> 方法时，将创建 -128 ~ 127 对应的 256 个对象缓存到堆内存里。</p>
+
+<p>这种设计，在频繁用到这个范围内的值的时候效率较高，可以避免重复创建和回收对象，否则有可能闲置较多对象在内存中。</p>
+
+<h4 id="使用不当的情况">使用不当的情况</h4>
+
+<p>自动装箱和拆箱这种语法糖为我们写代码带来了简洁和便利，但如果使用不当，也有可能带来负面影响。</p>
+
+<ol>
+  <li>
+    <p>性能的损耗</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="nc">Integer</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1000</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5000</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="c1">// 1. 先对 sum 进行自动拆箱</span>
+    <span class="c1">// 2. 加法</span>
+    <span class="c1">// 3. 自动装箱赋值给 sum，无法命中缓存，会 new Integer(int)</span>
+    <span class="n">sum</span> <span class="o">=</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">i</span><span class="o">;</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>在循环过程中会分别调用 4000 次 Integer.intValue() 和 Integer.valueOf(int)，并 new 4000 个 Integer 对象，而这些操作将 sum 的类型改为 int 即可避免，节约运行时间和空间，提升性能。</p>
+  </li>
+  <li>
+    <p>java.lang.NullPointerException</p>
+
+    <p>尝试对一个值为 null 的包装类对象进行自动拆箱，就有可能造成 NullPointerException。</p>
+
+    <p>比如：</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+</pre></td><td class="rouge-code"><pre><span class="nc">Integer</span> <span class="n">v1</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">v1</span><span class="o">;</span> <span class="c1">// NullPointerException</span>
+
+<span class="k">if</span> <span class="o">(</span><span class="n">v1</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// NullPointerException</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="kt">int</span> <span class="n">v3</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">+</span> <span class="mi">10</span><span class="o">;</span> <span class="c1">// NullPointerException</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>还有一种更隐蔽的情形，感谢 <a href="https://www.zhihu.com/people/zhou-shao-68-55">@周少</a> 补充：</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">long</span> <span class="n">value</span> <span class="o">=</span> <span class="kc">true</span> <span class="o">?</span> <span class="kc">null</span> <span class="o">:</span> <span class="mi">1</span><span class="o">;</span> <span class="c1">// NullPointerException</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>这实际上还是对一个值为 null 的 Long 类型进行自动拆箱，反汇编代码：</p>
+
+    <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+</pre></td><td class="rouge-code"><pre><span class="nc">Compiled</span> <span class="n">from</span> <span class="s">"Test.java"</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Test</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="nf">Test</span><span class="o">();</span>
+    <span class="nl">Code:</span>
+       <span class="mi">0</span><span class="o">:</span> <span class="n">aload_0</span>
+       <span class="mi">1</span><span class="o">:</span> <span class="n">invokespecial</span> <span class="err">#</span><span class="mi">1</span>                  <span class="c1">// Method java/lang/Object."&lt;init&gt;":()V</span>
+       <span class="mi">4</span><span class="o">:</span> <span class="k">return</span>
+
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">java</span><span class="o">.</span><span class="na">lang</span><span class="o">.</span><span class="na">String</span><span class="o">[]);</span>
+    <span class="nl">Code:</span>
+       <span class="mi">0</span><span class="o">:</span> <span class="n">aconst_null</span>
+       <span class="mi">1</span><span class="o">:</span> <span class="n">checkcast</span>     <span class="err">#</span><span class="mi">2</span>                  <span class="c1">// class java/lang/Long</span>
+       <span class="mi">4</span><span class="o">:</span> <span class="n">invokevirtual</span> <span class="err">#</span><span class="mi">3</span>                  <span class="c1">// Method java/lang/Long.longValue:()J</span>
+       <span class="mi">7</span><span class="o">:</span> <span class="n">lstore_1</span>
+       <span class="mi">8</span><span class="o">:</span> <span class="k">return</span>
+<span class="o">}</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+  <li><a href="http://droidyue.com/blog/2015/04/07/autoboxing-and-autounboxing-in-java/index.html">Java中的自动装箱与拆箱</a></li>
+  <li><a href="http://www.cnblogs.com/dolphin0520/p/3780005.html">深入剖析Java中的装箱和拆箱</a></li>
+</ul>
+:ET
