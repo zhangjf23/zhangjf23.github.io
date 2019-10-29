@@ -6,18 +6,20 @@ description: 超分辨率
 keywords: super resolution 
 ---
 
-A list of resources for example-based single image super-resolution, inspired by Awesome-deep-vision and Awesome Computer Vision .
+超分辨率学习资源，转载自[Awesome Computer Vision](https://github.com/jbhuang0604/awesome-computer-vision)
 
-Example-based methods
-Early learning-based methods
-[1] Freeman, William T and Pasztor, Egon C and Carmichael, Owen T, Learning low-level vision, IJCV, 2000. [Paper] (Freeman et al. first presented example-based or learning-based super-resolution framework - learn relationships between low-resolution image patches and its high-resolution counterparts.)
+# Example-based methods
+## Early learning-based methods
 
-[2] Freeman, William T and Jones, Thouis R and Pasztor, Egon C, Example-based super-resolution, IEEE Computer graphics and Applications, 2002. [Paper]
+[1] Freeman, William T and Pasztor, Egon C and Carmichael, Owen T, Learning low-level vision, IJCV, 2000. [[Paper]](http://people.csail.mit.edu/billf/papers/TR2000-05.pdf) (Freeman et al. first presented example-based or learning-based super-resolution framework: learn relationships between low-resolution image patches and its high-resolution counterparts.)
 
-[3] Chang, Hong and Yeung, Dit-Yan and Xiong, Yimin, Super-resolution through neighbor embedding, CVPR, 2004. [Paper][Code] (The idea that low-resolution patches and corresponding high-resolution patches share similar local geometries highly influences the subsequent coding-based or dictionary-based methods.)
+[2] Freeman, William T and Jones, Thouis R and Pasztor, Egon C, Example-based super-resolution, IEEE Computer graphics and Applications, 2002. [[Paper]](http://www.merl.com/publications/docs/TR2001-30.pdf)
 
-Sparsity-based methods
-[1] Yang, Jianchao and Wright, John and Huang, Thomas S and Ma, Yi, Image super-resolution via sparse representation, IEEE trans. image processing 2010. [paper] [Code] (SCSR: Classical sparsity-based SISR method - use sparse coding technique to learn low-resolution and high-resolution dictionaries.)
+[3] Chang, Hong and Yeung, Dit-Yan and Xiong, Yimin, Super-resolution through neighbor embedding, CVPR, 2004. [[Paper]](http://repository.ust.hk/ir/bitstream/1783.1-2284/1/yeung.cvpr2004.pdf)[[Code]](http://www.jdl.ac.cn/user/hchang/publication.htm) (The idea that low-resolution patches and corresponding high-resolution patches share similar local geometries highly influences the subsequent coding-based or dictionary-based methods.)
+
+## Sparsity-based methods
+
+[1] Yang, Jianchao and Wright, John and Huang, Thomas S and Ma, Yi, Image super-resolution via sparse representation, IEEE trans. image processing 2010. [paper](http://ieeexplore.ieee.org/document/5466111/?arnumber=5466111)[Code](http://www.ifp.illinois.edu/~jyang29/) (SCSR: Classical sparsity-based SISR method - use sparse coding technique to learn low-resolution and high-resolution dictionaries.)
 
 [2] Zeyde, Roman and Elad, Michael and Protter, Matan, On single image scale-up using sparse-representations, International conference on curves and surfaces, 2010. [Paper] [Code] (Low dimension feature speeds up the algorithm. Many sparsity-based image restoration techniques can be found in Prof. Elad's Website!)
 
