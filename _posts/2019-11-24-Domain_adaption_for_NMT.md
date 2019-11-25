@@ -7,25 +7,6 @@ keywords: NLP, machine translation, domain adaptation
 ---
 
 **基于domain adaptation的机器翻译方法，但不仅限于机器翻译**
-# 目录
-
-  * [Surveys](#surveys)
-  * [Supervised Domain Adaptation](supervised-domain-adaptation-for-nmt)
-  	* [Instance-based Methods](#instance-based-methods)
-  		* [Data Selection](#data-selection)
-  		* [Data Sampling](#data-sampling)
-  		* [Instance Weighting](#instance-weighting)
- 	* [Parameter-based Methods](#parameter-based-methods)
- 		* [Fine-tuning Methods](#fine-tuning-methods) 
- 		* [Regularized-based Methods](regularized-based-methods)
- 	* [Model-based Methods](#model-based-methods)
- 		* [Embedding methods](#embedding-methods)
- 		* [Adversarial methods](#adversarial-methods)
-* [Semi-supervised Domain Adaptation](#semi-supervised-domain-adaptation-for-nmt)
-* [Unsupervised Domain Adaptation](#unsupervised-domain-adaptation-for-nmt)
-* [Multi-source Domain Adaptation](#multi-source-domain-adaptation-for-nmt)
-* [Mix-domain Domain Adaptation](#mix-domain-domain-adaptation)
-
 
 # Surveys
 
