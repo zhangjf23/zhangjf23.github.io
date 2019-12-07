@@ -54,6 +54,7 @@ Utilize in-domain/target domain parallel data.
 #### General
 * [Do Better ImageNet Models Transfer Better?](https://arxiv.org/abs/1805.08974) (2018)
 * [Using Pre-Training Can Improve Model Robustness and Uncertainty](https://arxiv.org/abs/1901.09960) (2019)
+
 #### NMT
 * [Stanford neural machine translation systems for spoken language domains](https://nlp.stanford.edu/pubs/luong-manning-iwslt15.pdf) (2015)
     - 先在源域训练，之后在目标域finetune
