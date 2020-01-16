@@ -3,7 +3,7 @@ layout: post
 title: NLP中的Subword算法
 categories: NLP
 description: Subword算法，BPE， WordPiece
-keywords: BPE， WordPiece 
+keywords: BPE， WordPiece
 ---
 
 # 1. Subword与传统空格分隔分词的对比
