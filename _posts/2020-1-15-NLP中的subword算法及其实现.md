@@ -18,9 +18,9 @@ keywords: BPE， WordPiece
 
 同时，这种word-level的处理方式并不能通过增大词表真正解决OOV的问题，因为再大的词典不能真正覆盖所有的词汇。
 
-为了处理这个问题，一个思路是将字符当做基本单元，建立character-level模型。character-level模型试图使用26个字母加上一些符号去表示所有的词汇，相比于word-level模型，这种处理方式的粒度变小，其输入长度变长，使得数据更加系数并且难以学习长远程的依赖关系。相关工作可参考[Character-Level Neural Machine Translation](https://arxiv.org/abs/1610.03017)，实验结论是基于字符的模型能更好处理OOV问题，并且能更好学习多语言之间通用的语素。
+为了处理这个问题，一个思路是将字符当做基本单元，建立character-level模型。character-level模型试图使用26个字母加上一些符号去表示所有的词汇，相比于word-level模型，这种处理方式的粒度变小，其输入长度变长，使得数据更加稀疏并且难以学习长远程的依赖关系。类似的工作可参考[Character-Level Neural Machine Translation](https://arxiv.org/abs/1610.03017)，实验结论是基于字符的模型能更好处理OOV问题，并且能更好学习多语言之间通用的语素。
 
-word—level模型导致严重的OOV，而character-level模型粒度又太小，那么subword-level的处理方式就应运而生。subword将单词划分为更小的单元，比如"older"划分为"old" 和 "er"，而这些单元往往能应用到别的词汇当中。举个例子：
+word-level模型导致严重的OOV，而character-level模型粒度又太小，那么subword-level的处理方式就应运而生。subword将单词划分为更小的单元，比如"older"划分为"old" 和 "er"，而这些单元往往能应用到别的词汇当中。举个例子：
 ```
 训练集的词汇: old older oldest smart smarter smartest
 word-level 词典: old older oldest smart smarter smartest 长度为6
@@ -35,9 +35,68 @@ subword-level 词典: old smart er est 长度为4
 
 ## 2.1 Byte Pair Encoding
 
+Byte Pair Encoding (BPE) 是一种压缩算法，它属于自下而上的算法。BPE最早应用于NLP任务来源于[Neural Machine Translation of Rare Words with Subword Units](https://arxiv.org/abs/1508.07909)，目前已经是NLP任务中最为简单有效的方法。[GPT-2](https://github.com/openai/gpt-2)中使用BPE作为subword算法，并且WMT比赛中多数提交者使用的subword算法也是BPE。
+
+BPE是一种数据压缩的方式，它将字符串中最常见的一对连续字符数据替换成该字符串中不存在的字符串，后续再通过一个词表重建原始的数据。BPE的处理过程可以理解为一个单词的再拆分过程。如"loved","loving","loves"这三个单词，其本身的语义都是”爱”的意思。BPE通过训练，能够把上面的3个单词拆分成”lov”,”ed”,”ing”,”es”几部分，这样可以把词的本身的意思和时态分开，有效的减少了词表的数量。
+
+BPE算法的流程可参考[论文](https://arxiv.org/abs/1508.07909)，这里添加一些自己的理解。
+
+* 获取subword词表的流程(learn-bpe)
+    * 准备语料，分解成最小单元，比如英文中26个字母加上各种符号，作为原始词表
+    * 根据语料统计相邻字符对出现的频次
+    * 挑出频次最高的相邻字符对，比如"t"和"h"，合并组成"th"，加入词表，训练语料中所有该相邻字符对都进行融合
+    * 重复2和3操作，直至词表中单词的数量达到期望，或下一个最高频的字节对出现频率为1
+
+* 编码和解码(apply-bpe及其逆过程)
+    * 编码
+
+    得到subword词表后，对该词表按照子词长度由大到小排序。编码时，对于每个单词，遍历排好序的字词词表寻找是否有token是当前单词的子字符串，如果有，则该token是表示单词的tokens之一。从最长的token迭代到最短的token，尝试将每个单词中的子字符串替换为token。 最终，该过程将迭代所有tokens，并将所有子字符串替换为tokens。 如果仍然有子字符串没被替换但所有token都已迭代完毕，则将剩余的子词替换为特殊token，如`<unk>`。
+    * 解码
+
+    该过程是编码的逆过程，主要应用在得到翻译输出怎么将subword恢复为word。使用简单的符号替换即可:
+    ```
+    sed -r 's/(@@ )|(@@ ?$)//g'
+    ```
+
 ## 2.2 wordpiece
 
+wordpiece作为[Bert](https://arxiv.org/abs/1810.04805)使用的分词方式，其生成词表的方式和BPE非常相近，都是用合并token的方式来生成新的token，最大的区别在于选择合并哪两个token。BPE选择频率最高的相邻字符对进行合并，而wordpiece是基于概率生成的，参考按照作者的原话:
+> Choose the new word unit out of all possible ones that increase the likelihood on the training data the most when added to the mode.
+
+从字面上可能有些难以理解，列一下公式就比较清楚了。在做分词的时候假设词和词之间是独立的，所以句子的likelihood等于句子中每个词概率的乘积：
+![avatar](./pictures/1.png)
+
+如果把相邻的x和y两个token合并生成一个新的token叫做z，那么整个句子likelihood的变化可以用下面的式子来表达：
+![avatar](./pictures/2.png)
+
+这不就是两个token之间的互信息嘛！所以wordpiece和BPE的核心区别就在于wordpiece是按token间的互信息来进行合并而BPE是按照token一同出现的频率来合并的。
+
+wordpiece算法中subword词表的学习跟BPE也差不多:
+
+* 准备语料，分解成最小单元，比如英文中26个字母加上各种符号，作为原始词表
+* 利用上述语料训练语言模型
+* 从所有可能的subword单元中选择加入语言模型后能最大程度地增加训练数据概率的单元作为新的单元
+* 重复上步骤，直至词表大小达到设定值或概率增量低于某一阈值
+
 ## 2.3 unigram language model
+
+语言模型作为NLP的大厦根基，也是unigram分词的基础。在wordpiece算法中，其实已经用到了language modeling，在选择token进行合并的时候目标就是能提高句子的likelihood。而unigram分词则更进一步，直接以最大化句子的likelihood为目标来直接构建整个词表。
+
+首先，了解一下怎么样在给定词表的条件下最大化句子的likelihood。
+给定词表及对应概率值: {"你":0.18, "们":0.16, "好":0.18, "你们":0.15}，对句子”你们好“进行分词:
+* 划分为"你@@" "们@@" "好" 的概率为 0.18\*0.16\*0.18=0.005184
+* 划分为"你们@@" "好@@" 的概率为 0.15\*0.18=0.027
+明显看出后一种分词方式要比前一种好，当然在真实的案例下词表可能有几万个token，直接罗列各种组合的概率显然不可能，所以需要用到Viterbi算法。因此在给定词表的情况下，可以 **1.计算每个token对应的概率；2.找到一个句子最好的分词方式**
+
+但是在词表没有确定的情况下，同时要优化词表和词表里每个token的概率很难做到。unigram分词使用逐步迭代的方式来求解，具体步骤如下：
+
+* 首先初始化一个很大的词表
+* 重复以下步骤直到词表数量减少到预先设定的阈值：
+    * 保持词表不变，用EM算法来求解每个token的概率
+    * 对于每一个token，计算如果把这个token从词表中移除而导致的likelihood减少值，作为这个token的loss
+    * 按loss从大到小排序，保留前n%（原文中为80%）的token。
+
+初始化词表可以用不同的方法，一个比较直接的办法就是用所有长度为1的token加上高频出现的ngram来作为起始词表。
 
 # 3. 2种开源实现
 
