@@ -103,6 +103,63 @@ wordpiece算法中subword词表的学习跟BPE也差不多:
 
 # 3. 2种开源实现
 
+> 在自然语言处理中，常见的subword算法开源实现有：
+>   * [subword-nmt](https://github.com/rsennrich/subword-nmt)
+>   * [fastBPE](https://github.com/glample/fastBPE)
+>   * [sentencepiece](https://github.com/google/sentencepiece)
+>
 ## 3.1 subword-nmt
+
+### 3.1.1 简介
+subword-nmt的项目地址为: https://github.com/rsennrich/subword-nmt。
+文件主要组成部分：
+```
+.
+├── __init__.py
+├── apply_bpe.py
+├── bpe_toy.py
+├── chrF.py
+├── get_vocab.py
+├── learn_bpe.py
+├── learn_joint_bpe_and_vocab.py
+├── segment_char_ngrams.py
+└── subword_nmt.py
+```
+subword-nmt可通过pip进行安装
+```
+pip install subword-nmt
+or
+pip install https://github.com/rsennrich/subword-nmt/archive/master.zip
+```
+也可直接```git clone```直接食用：
+```
+python learn_bpe.py [-options]
+```
+由于翻译项目动辄几百万的语料，subword-nmt的处理速度要比fastBPE慢很多，此时配合pypy和多进程处理食用更佳。
+
+### 3.1.2. 使用方法
+
+在subword-nmt中，比较关键的脚本有```learn_bpe.py```、```apply_bpe.py```和```get_vocab.py```。一般来说，使用BPE进行分词有以下几个步骤：learn_bpe、apply_bpe和get_vocab。如下:
+```
+# 学习codes和vocab
+cat {train_file}.L1 {train_file}.L2 | subword-nmt learn-bpe -s {num_operations} -o {codes_file}
+subword-nmt apply-bpe -c {codes_file} < {train_file}.L1 | subword-nmt get-vocab > {vocab_file}.L1
+subword-nmt apply-bpe -c {codes_file} < {train_file}.L2 | subword-nmt get-vocab > {vocab_file}.L2
+or
+subword-nmt learn-joint-bpe-and-vocab --input {train_file}.L1 {train_file}.L2 -s {num_operations} -o {codes_file} --write-vocabulary {vocab_file}.L1 {vocab_file}.L2
+
+# 对训练语料进行分词
+subword-nmt apply-bpe -c {codes_file} --vocabulary {vocab_file}.L1 --vocabulary-threshold 50 < {train_file}.L1 > {train_file}.BPE.L1
+subword-nmt apply-bpe -c {codes_file} --vocabulary {vocab_file}.L2 --vocabulary-threshold 50 < {train_file}.L2 > {train_file}.BPE.L2
+
+# 对测试语料进行分词
+subword-nmt apply-bpe -c {codes_file} --vocabulary {vocab_file}.L1 --vocabulary-threshold 50 < {test_file}.L1 > {test_file}.BPE.L1
+
+# 得到词典，这里的方法有多种
+cat {train_file}.BPE.L1 {train_file}.BPE.L2 | subword-nmt get-vocab > {vocab_file}
+or
+nematus/data/build_dictionary.py {train_file}.BPE.L1 {train_file}.BPE.L2 # nematus中的实现
+```
+此外，BPE-dropout是一种为分词过程提供随机性的处理方式。与BPE相比，BPE-dropout在对训练的平行语料进行apply_bpe的过程中，设定一定概率让融合(merge)不通过，这样对于同一个单词，也会出现不同的拆分过程。可以通过调整 ```--dropout 0.1```这个参数为```apply-bpe```这个过程增加随机性。
 
 ## 3.2 sentencepiece
