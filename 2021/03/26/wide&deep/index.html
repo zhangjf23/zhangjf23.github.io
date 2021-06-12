@@ -22,17 +22,23 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Even night drunk with you for real.">
-<meta property="og:type" content="website">
-<meta property="og:title" content="grovlyhop&#39;s blog">
-<meta property="og:url" content="http://example.com/categories/Nature-Language-Processing/index.html">
+  <meta name="description" content="Wide&amp;Deep是google在2016年提出的推荐模型，在学术界和工业界存在巨大的影响力。可以这么认为，Wide&amp;Deep是传统推荐模型往深度推荐模型发展的桥梁，它的设计理念反映了深度推荐模型发展的主流方向。这篇文章从Wide&amp;Deep的结构出发，探讨模型背后的动机。 1. 模型结构Wide&amp;Deep模型，由左侧的Wide部分和右侧的Deep部分组成。Wide部">
+<meta property="og:type" content="article">
+<meta property="og:title" content="何为Wide，何为Deep">
+<meta property="og:url" content="http://example.com/2021/03/26/wide&deep/index.html">
 <meta property="og:site_name" content="grovlyhop&#39;s blog">
-<meta property="og:description" content="Even night drunk with you for real.">
+<meta property="og:description" content="Wide&amp;Deep是google在2016年提出的推荐模型，在学术界和工业界存在巨大的影响力。可以这么认为，Wide&amp;Deep是传统推荐模型往深度推荐模型发展的桥梁，它的设计理念反映了深度推荐模型发展的主流方向。这篇文章从Wide&amp;Deep的结构出发，探讨模型背后的动机。 1. 模型结构Wide&amp;Deep模型，由左侧的Wide部分和右侧的Deep部分组成。Wide部">
 <meta property="og:locale">
+<meta property="og:image" content="http://example.com/2021/03/26/wide&deep/images/W&Dmodel.jpg">
+<meta property="article:published_time" content="2021-03-25T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-25T16:00:00.000Z">
 <meta property="article:author" content="zhangjf">
+<meta property="article:tag" content="feature engineering">
+<meta property="article:tag" content="model">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/03/26/wide&deep/images/W&Dmodel.jpg">
 
-<link rel="canonical" href="http://example.com/categories/Nature-Language-Processing/">
+<link rel="canonical" href="http://example.com/2021/03/26/wide&deep/">
 
 
 <script id="page-configurations">
@@ -40,12 +46,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'cn-Hans'
   };
 </script>
 
-  <title>Category: Nature Language Processing | grovlyhop's blog</title>
+  <title>何为Wide，何为Deep | grovlyhop's blog</title>
   
 
 
@@ -153,51 +159,105 @@
         <div class="content-wrap">
           
 
-          <div class="content category">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">Nature Language Processing
-          <small>Category</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/26/wide&deep/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="zhangjf">
+      <meta itemprop="description" content="Even night drunk with you for real.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="grovlyhop's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          何为Wide，何为Deep
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-03-26 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-26T00:00:00+08:00">2021-03-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/recommendation-system/" itemprop="url" rel="index"><span itemprop="name">recommendation system</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>335</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>1 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2019</span>
+        <p>Wide&amp;Deep是google在2016年提出的推荐模型，在学术界和工业界存在巨大的影响力。可以这么认为，Wide&amp;Deep是传统推荐模型往深度推荐模型发展的桥梁，它的设计理念反映了深度推荐模型发展的主流方向。这篇文章从Wide&amp;Deep的结构出发，探讨模型背后的动机。</p>
+<h1 id="1-模型结构"><a href="#1-模型结构" class="headerlink" title="1. 模型结构"></a>1. 模型结构</h1><p>Wide&amp;Deep模型，由左侧的Wide部分和右侧的Deep部分组成。Wide部分是广义线性模型，结构非常简单，就是将输入层直接连到输出层，中间没有做任何处理。而Deep部分稍微复杂一些，由Embedding+MLP组成。这个前馈神经网络对一些sparse特征进行低维的dense embedding，然后和dense特征合并，经过多层卷积机计算得到结果。</p>
+<p><img src="images/W&Dmodel.jpg"></p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2019-11-18T00:00:00+08:00"
-              content="2019-11-18">
-          11-18
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/feature-engineering/" rel="tag"># feature engineering</a>
+              <a href="/tags/model/" rel="tag"># model</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2019/11/18/NLP%E4%B8%AD%E7%9A%84subword%E7%AE%97%E6%B3%95/" itemprop="url">
-            <span itemprop="name">NLP中的subword算法及实现</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/22/ODPS%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8C%97/" rel="prev" title="ODPS操作指北(1):数据开发实用语法">
+      <i class="fa fa-chevron-left"></i> ODPS操作指北(1):数据开发实用语法
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
@@ -250,6 +310,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84"><span class="nav-text">1. 模型结构</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -283,6 +344,14 @@
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yourname" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;yourname" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://scholar.google.com/citations?hl=zh-CN&user=K7spOEYAAAAJ" title="Scholar → https:&#x2F;&#x2F;scholar.google.com&#x2F;citations?hl&#x3D;zh-CN&amp;user&#x3D;K7spOEYAAAAJ" rel="noopener" target="_blank"><i class="fab fa-google fa-fw"></i>Scholar</a>
+      </span>
+  </div>
 
 
 
@@ -315,13 +384,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">6k</span>
+    <span title="Symbols count total">1k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">5 mins.</span>
+    <span title="Reading time total">1 mins.</span>
 </div>
 
         
