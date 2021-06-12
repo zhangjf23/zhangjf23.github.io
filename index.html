@@ -185,6 +185,13 @@
 
               <time title="Created: 2021-03-26 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-26T00:00:00+08:00">2021-03-26</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-04-04 00:00:00" itemprop="dateModified" datetime="2021-04-04T00:00:00+08:00">2021-04-04</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -201,14 +208,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>335</span>
+              <span>3.7k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>1 mins.</span>
+              <span>3 mins.</span>
             </span>
 
         </div>
@@ -220,10 +227,25 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Wide&amp;Deep是google在2016年提出的推荐模型，在学术界和工业界存在巨大的影响力。可以这么认为，Wide&amp;Deep是传统推荐模型往深度推荐模型发展的桥梁，它的设计理念反映了深度推荐模型发展的主流方向。这篇文章从Wide&amp;Deep的结构出发，探讨模型背后的动机。</p>
+          <p>Wide&amp;Deep是google在2016年提出的推荐模型，在学术界和工业界存在巨大的影响力。可以这么认为，Wide&amp;Deep是传统推荐模型往深度推荐模型发展的桥梁，它的设计理念反映了深度推荐模型发展的主流方向。最近在做商品排序相关的项目，入坑推荐系统，期望能从Wide&amp;Deep模型的结构出发，梳理推荐系统设计的背后动机。</p>
 <h1 id="1-模型结构"><a href="#1-模型结构" class="headerlink" title="1. 模型结构"></a>1. 模型结构</h1><p>Wide&amp;Deep模型，由左侧的Wide部分和右侧的Deep部分组成。Wide部分是广义线性模型，结构非常简单，就是将输入层直接连到输出层，中间没有做任何处理。而Deep部分稍微复杂一些，由Embedding+MLP组成。这个前馈神经网络对一些sparse特征进行低维的dense embedding，然后和dense特征合并，经过多层卷积机计算得到结果。</p>
-<p><img src="images/W&Dmodel.jpg"></p>
-
+<p><img src="/2021/03/26/wide&deep/W&Dmodel.jpg"></p>
+<p>这是Wide&amp;Deep模型的结构，那么问题来了，google为什么要设计一个这种形式的模型？Wide侧的优点是什么，缺点是什么？Deep侧呢？能不能去掉？能不能用其他结构代替？带着这些问题我们接着往下看。</p>
+<h1 id="2-推荐模型的能力"><a href="#2-推荐模型的能力" class="headerlink" title="2. 推荐模型的能力"></a>2. 推荐模型的能力</h1><p>上一节我们介绍了Wide&amp;Deep的结构，也引出模型为什么要这么设计的问题。这节从推荐模型的本质出发，来聊聊什么是推荐模型，推荐模型需要具备什么能力。</p>
+<p>首先，我们希望推荐系统记住什么？能够记住的肯定是那些高频、常见的模式。比如：</p>
+<ul>
+<li>50岁中国大妈端午节登录电商网站，网站给她推荐粽子，大概率能成交</li>
+<li>25岁美国研究生黑五节登录电商网站，网站给他推荐手机，也大概率会有点击、交易等行为</li>
+</ul>
+<p>为什么？因为在训练样本中&lt;50, 女性, 中国, 端午节, 粽子&gt;这类训练样本太多，推荐模型只需记住，下次遇到同样的情况，只需进行相同的推荐行为，就能获得很高的收益。这个就是我们希望推荐系统拥有的“记忆”能力。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/03/26/wide&deep/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -242,7 +264,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2020/05/22/ODPS%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8C%97/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/01/18/NLP%E4%B8%AD%E7%9A%84subword%E7%AE%97%E6%B3%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -256,7 +278,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2020/05/22/ODPS%E6%93%8D%E4%BD%9C%E6%8C%87%E5%8C%97/" class="post-title-link" itemprop="url">ODPS操作指北(1):数据开发实用语法</a>
+            <a href="/2020/01/18/NLP%E4%B8%AD%E7%9A%84subword%E7%AE%97%E6%B3%95/" class="post-title-link" itemprop="url">NLP中的subword算法及实现</a>
         </h2>
 
         <div class="post-meta">
@@ -266,88 +288,7 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-05-22 00:00:00" itemprop="dateCreated datePublished" datetime="2020-05-22T00:00:00+08:00">2020-05-22</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/data-develepment/" itemprop="url" rel="index"><span itemprop="name">data develepment</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>220</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>1 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>大数据计算服务（MaxCompute，原名ODPS）是阿里巴巴自主研发的海量数据处理平台。主要服务于批量结构化数据的存储和计算，可以提供海量数据仓库的解决方案以及针对大数据的分析建模服务。ODPS本质上是一个云端集成数据库，集数据抽取、数据清洗、业务开发、任务调度、任务运维于一体。本系列文章会从两部分讲述ODPS(即MaxCompute)的使用，第一部分是使用ODPS进行数据开发的语法；第二部分讲述数据集成、任务调度、运维等方面</p>
-<h1 id="1-概览"><a href="#1-概览" class="headerlink" title="1. 概览"></a>1. 概览</h1>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn-Hans">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2019/11/18/NLP%E4%B8%AD%E7%9A%84subword%E7%AE%97%E6%B3%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="zhangjf">
-      <meta itemprop="description" content="Even night drunk with you for real.">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="grovlyhop's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/11/18/NLP%E4%B8%AD%E7%9A%84subword%E7%AE%97%E6%B3%95/" class="post-title-link" itemprop="url">NLP中的subword算法及实现</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2019-11-18 00:00:00" itemprop="dateCreated datePublished" datetime="2019-11-18T00:00:00+08:00">2019-11-18</time>
+              <time title="Created: 2020-01-18 00:00:00" itemprop="dateCreated datePublished" datetime="2020-01-18T00:00:00+08:00">2020-01-18</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
@@ -392,7 +333,7 @@
 
       
           <p>最近在做机器翻译相关的工作，发现subword算法在NLP各大任务中无处不在。既然要用到并且用好subword，这里就重点捋一遍关于subword的算法以及几个开源的实现。</p>
-<h1 id="1-word、subword和character"><a href="#1-word、subword和character" class="headerlink" title="1.word、subword和character"></a>1.word、subword和character</h1><p>在神经机器翻译中，通常有一个固定的词表，并且模型的训练和预测都非常依赖这个词表。在神经网络的训练过程中，需要对词表中每个词做向量表，每个词对应不同的向量，即embedding的过程。每个不同的词对应不同的向量，即使两个词看起来十分相近，但在训练过程词向量没有任何关系。这就导致一个单词因为拥有不同的形态产生不同的词，从而产生大词汇量的问题。</p>
+<h1 id="1-word、subword和character"><a href="#1-word、subword和character" class="headerlink" title="1. word、subword和character"></a>1. word、subword和character</h1><p>在神经机器翻译中，通常有一个固定的词表，并且模型的训练和预测都非常依赖这个词表。在神经网络的训练过程中，需要对词表中每个词做向量表，每个词对应不同的向量，即embedding的过程。每个不同的词对应不同的向量，即使两个词看起来十分相近，但在训练过程词向量没有任何关系。这就导致一个单词因为拥有不同的形态产生不同的词，从而产生大词汇量的问题。</p>
 <p>机器翻译的词表是定长的，但是需要实际翻译的词汇是开放的(out of vocabulary)。以前的做法是新词汇添加到词典中，但是过大的词典会带来两个问题：</p>
 <ul>
 <li>稀疏问题: 某些词汇出现的频率很低，得不到充分的训练</li>
@@ -403,79 +344,409 @@
 <p>word-level模型导致严重的OOV，而character-level模型粒度又太小，那么subword-level的处理方式就应运而生。subword将单词划分为更小的单元，比如”older”划分为”old” 和 “er”，而这些单元往往能应用到别的词汇当中。举个例子：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">训练集的词汇: old older oldest smart smarter smartest</span><br><span class="line">word-level 词典: old older oldest smart smarter smartest 长度为6</span><br><span class="line">subword-level 词典: old smart er est 长度为4</span><br></pre></td></tr></table></figure>
 <p>将词划分成字词的形式，能够大大降低词典的大小。同时，未知词汇能以subword组合的形式表示出来，也能提升词典的表达能力。</p>
-<h1 id="2-3种subword算法"><a href="#2-3种subword算法" class="headerlink" title="2. 3种subword算法"></a>2. 3种subword算法</h1><p>如何将词分解成subword，依据不同的策略，产生了几种主流的方法: <a target="_blank" rel="noopener" href="https://www.aclweb.org/anthology/P16-1162/">Byte Pair Encoding (BPE)</a>、<a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1609.08144.pdf">wordpiece</a> 和 <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1804.10959">Unigram Language Model</a>。值得一提的是，这几种算法的处理流程跟语言学没有太大的关系，单纯是统计学的解决思路。</p>
-<h2 id="2-1-Byte-Pair-Encoding"><a href="#2-1-Byte-Pair-Encoding" class="headerlink" title="2.1 Byte Pair Encoding"></a>2.1 Byte Pair Encoding</h2><p>Byte Pair Encoding (BPE) 是一种压缩算法，它属于自下而上的算法。BPE最早应用于NLP任务来源于<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1508.07909">Neural Machine Translation of Rare Words with Subword Units</a>，目前已经是NLP任务中最为简单有效的方法。<a target="_blank" rel="noopener" href="https://github.com/openai/gpt-2">GPT-2</a>中使用BPE作为subword算法，并且WMT比赛中多数提交者使用的subword算法也是BPE。</p>
-<p>BPE是一种数据压缩的方式，它将字符串中最常见的一对连续字符数据替换成该字符串中不存在的字符串，后续再通过一个词表重建原始的数据。BPE的处理过程可以理解为一个单词的再拆分过程。如”loved”,”loving”,”loves”这三个单词，其本身的语义都是”爱”的意思。BPE通过训练，能够把上面的3个单词拆分成”lov”,”ed”,”ing”,”es”几部分，这样可以把词的本身的意思和时态分开，有效的减少了词表的数量。</p>
-<p>BPE算法的流程可参考<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1508.07909">论文</a>，这里添加一些自己的理解。</p>
-<ul>
-<li><p>获取subword词表的流程(learn-bpe)</p>
-<ul>
-<li>准备语料，分解成最小单元，比如英文中26个字母加上各种符号，作为原始词表</li>
-<li>根据语料统计相邻字符对出现的频次</li>
-<li>挑出频次最高的相邻字符对，比如”t”和”h”，合并组成”th”，加入词表，训练语料中所有该相邻字符对都进行融合</li>
-<li>重复2和3操作，直至词表中单词的数量达到期望，或下一个最高频的字节对出现频率为1</li>
-</ul>
-</li>
-<li><p>编码和解码(apply-bpe及其逆过程)</p>
-<ul>
-<li><strong>编码</strong>: 得到subword词表后，对该词表按照子词长度由大到小排序。编码时，对于每个单词，遍历排好序的字词词表寻找是否有token是当前单词的子字符串，如果有，则该token是表示单词的tokens之一。从最长的token迭代到最短的token，尝试将每个单词中的子字符串替换为token。 最终，该过程将迭代所有tokens，并将所有子字符串替换为tokens。 如果仍然有子字符串没被替换但所有token都已迭代完毕，则将剩余的子词替换为特殊token，如<code>&lt;unk&gt;</code>。</li>
-<li><strong>解码</strong>: 该过程是编码的逆过程，主要应用在得到翻译输出怎么将subword恢复为word。使用简单的符号替换即可:  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sed -r &#x27;s/(@@ )|(@@ ?$)//g&#x27;</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ul>
-<h2 id="2-2-wordpiece"><a href="#2-2-wordpiece" class="headerlink" title="2.2 wordpiece"></a>2.2 wordpiece</h2><p>wordpiece作为<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1810.04805">Bert</a>使用的分词方式，其生成词表的方式和BPE非常相近，都是用合并token的方式来生成新的token，最大的区别在于选择合并哪两个token。BPE选择频率最高的相邻字符对进行合并，而wordpiece是基于概率生成的，参考按照作者的原话:</p>
-<blockquote>
-<p>Choose the new word unit out of all possible ones that increase the likelihood on the training data the most when added to the mode.</p>
-</blockquote>
-<p>从字面上可能有些难以理解，列一下公式就比较清楚了。在做分词的时候假设词和词之间是独立的，所以句子的likelihood等于句子中每个词概率的乘积：</p>
-<p><img src="/2019/11/18/NLP%E4%B8%AD%E7%9A%84subword%E7%AE%97%E6%B3%95/wordpiece1.jpg"></p>
-<p>如果把相邻的x和y两个token合并生成一个新的token叫做z，那么整个句子likelihood的变化可以用下面的式子来表达：</p>
-<p><img src="/2019/11/18/NLP%E4%B8%AD%E7%9A%84subword%E7%AE%97%E6%B3%95/wordpiece2.jpg"></p>
-<p>这不就是两个token之间的互信息嘛！所以wordpiece和BPE的核心区别就在于wordpiece是按token间的互信息来进行合并而BPE是按照token一同出现的频率来合并的。</p>
-<p>wordpiece算法中subword词表的学习跟BPE也差不多:</p>
-<ul>
-<li>准备语料，分解成最小单元，比如英文中26个字母加上各种符号，作为原始词表</li>
-<li>利用上述语料训练语言模型</li>
-<li>从所有可能的subword单元中选择加入语言模型后能最大程度地增加训练数据概率的单元作为新的单元</li>
-<li>重复上步骤，直至词表大小达到设定值或概率增量低于某一阈值</li>
-</ul>
-<h2 id="2-3-unigram-language-model"><a href="#2-3-unigram-language-model" class="headerlink" title="2.3 unigram language model"></a>2.3 unigram language model</h2><p>语言模型作为NLP的大厦根基，也是unigram分词的基础。在wordpiece算法中，其实已经用到了language modeling，在选择token进行合并的时候目标就是能提高句子的likelihood。而unigram分词则更进一步，直接以最大化句子的likelihood为目标来直接构建整个词表。</p>
-<p>首先，了解一下怎么样在给定词表的条件下最大化句子的likelihood。<br>给定词表及对应概率值: {“你”:0.18, “们”:0.16, “好”:0.18, “你们”:0.15}，对句子”你们好“进行分词:</p>
-<ul>
-<li>划分为”你@@” “们@@” “好” 的概率为 0.18*0.16*0.18=0.005184</li>
-<li>划分为”你们@@” “好@@” 的概率为 0.15*0.18=0.027</li>
-</ul>
-<p>明显看出后一种分词方式要比前一种好，当然在真实的案例下词表可能有几万个token，直接罗列各种组合的概率显然不可能，所以需要用到Viterbi算法。因此在给定词表的情况下，可以 <strong>1.计算每个token对应的概率；2.找到一个句子最好的分词方式</strong></p>
-<p>但是在词表没有确定的情况下，同时要优化词表和词表里每个token的概率很难做到。unigram分词使用逐步迭代的方式来求解，具体步骤如下：</p>
-<ul>
-<li>首先初始化一个很大的词表</li>
-<li>重复以下步骤直到词表数量减少到预先设定的阈值：<ul>
-<li>保持词表不变，用EM算法来求解每个token的概率</li>
-<li>对于每一个token，计算如果把这个token从词表中移除而导致的likelihood减少值，作为这个token的loss</li>
-<li>按loss从大到小排序，保留前n%（原文中为80%）的token。</li>
-</ul>
-</li>
-</ul>
-<p>初始化词表可以用不同的方法，一个比较直接的办法就是用所有长度为1的token加上高频出现的ngram来作为起始词表。</p>
-<h1 id="3-常用的分词开源实现"><a href="#3-常用的分词开源实现" class="headerlink" title="3. 常用的分词开源实现"></a>3. 常用的分词开源实现</h1><blockquote>
-<p>在自然语言处理中，常见的subword算法开源实现以下三种，这里主要讲述<strong>subword-nmt</strong>的使用</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://github.com/rsennrich/subword-nmt">subword-nmt</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/glample/fastBPE">fastBPE</a></li>
-<li><a target="_blank" rel="noopener" href="https://github.com/google/sentencepiece">sentencepiece</a></li>
-</ul>
-</blockquote>
-<h2 id="3-1-subword-nmt"><a href="#3-1-subword-nmt" class="headerlink" title="3.1 subword-nmt"></a>3.1 subword-nmt</h2><h3 id="3-1-1-简介"><a href="#3-1-1-简介" class="headerlink" title="3.1.1 简介"></a>3.1.1 简介</h3><p>subword-nmt的项目地址为: <a target="_blank" rel="noopener" href="https://github.com/rsennrich/subword-nmt%E3%80%82">https://github.com/rsennrich/subword-nmt。</a><br>文件主要组成部分：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── __init__.py</span><br><span class="line">├── apply_bpe.py</span><br><span class="line">├── bpe_toy.py</span><br><span class="line">├── chrF.py</span><br><span class="line">├── get_vocab.py</span><br><span class="line">├── learn_bpe.py</span><br><span class="line">├── learn_joint_bpe_and_vocab.py</span><br><span class="line">├── segment_char_ngrams.py</span><br><span class="line">└── subword_nmt.py</span><br></pre></td></tr></table></figure>
-<p>subword-nmt可通过pip进行安装</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">pip install subword-nmt</span><br><span class="line">or</span><br><span class="line">pip install https://github.com/rsennrich/subword-nmt/archive/master.zip</span><br></pre></td></tr></table></figure>
-<p>也可直接<code>git clone</code>直接食用：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python learn_bpe.py [-options]</span><br></pre></td></tr></table></figure>
-<p>由于翻译项目动辄几百万的语料，subword-nmt的处理速度要比fastBPE慢很多，此时配合pypy和多进程处理食用更佳。</p>
-<h3 id="3-1-2-使用方法"><a href="#3-1-2-使用方法" class="headerlink" title="3.1.2. 使用方法"></a>3.1.2. 使用方法</h3><p>在subword-nmt中，比较关键的脚本有<code>learn_bpe.py</code>、<code>apply_bpe.py</code>和<code>get_vocab.py</code>。一般来说，使用BPE进行分词有以下几个步骤：learn_bpe、apply_bpe和get_vocab。如下:</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># 学习codes和vocab</span><br><span class="line">cat &#123;train_file&#125;.L1 &#123;train_file&#125;.L2 | subword-nmt learn-bpe -s &#123;num_operations&#125; -o &#123;codes_file&#125;</span><br><span class="line">subword-nmt apply-bpe -c &#123;codes_file&#125; &lt; &#123;train_file&#125;.L1 | subword-nmt get-vocab &gt; &#123;vocab_file&#125;.L1</span><br><span class="line">subword-nmt apply-bpe -c &#123;codes_file&#125; &lt; &#123;train_file&#125;.L2 | subword-nmt get-vocab &gt; &#123;vocab_file&#125;.L2</span><br><span class="line">or</span><br><span class="line">subword-nmt learn-joint-bpe-and-vocab --input &#123;train_file&#125;.L1 &#123;train_file&#125;.L2 -s &#123;num_operations&#125; -o &#123;codes_file&#125; --write-vocabulary &#123;vocab_file&#125;.L1 &#123;vocab_file&#125;.L2</span><br><span class="line"></span><br><span class="line"># 对训练语料进行分词</span><br><span class="line">subword-nmt apply-bpe -c &#123;codes_file&#125; --vocabulary &#123;vocab_file&#125;.L1 --vocabulary-threshold 50 &lt; &#123;train_file&#125;.L1 &gt; &#123;train_file&#125;.BPE.L1</span><br><span class="line">subword-nmt apply-bpe -c &#123;codes_file&#125; --vocabulary &#123;vocab_file&#125;.L2 --vocabulary-threshold 50 &lt; &#123;train_file&#125;.L2 &gt; &#123;train_file&#125;.BPE.L2</span><br><span class="line"></span><br><span class="line"># 对测试语料进行分词</span><br><span class="line">subword-nmt apply-bpe -c &#123;codes_file&#125; --vocabulary &#123;vocab_file&#125;.L1 --vocabulary-threshold 50 &lt; &#123;test_file&#125;.L1 &gt; &#123;test_file&#125;.BPE.L1</span><br><span class="line"></span><br><span class="line"># 得到词典，这里的方法有多种</span><br><span class="line">cat &#123;train_file&#125;.BPE.L1 &#123;train_file&#125;.BPE.L2 | subword-nmt get-vocab &gt; &#123;vocab_file&#125;</span><br><span class="line">or</span><br><span class="line">nematus/data/build_dictionary.py &#123;train_file&#125;.BPE.L1 &#123;train_file&#125;.BPE.L2 # nematus中的实现</span><br></pre></td></tr></table></figure>
-<p>此外，BPE-dropout是一种为分词过程提供随机性的处理方式。与BPE相比，BPE-dropout在对训练的平行语料进行apply_bpe的过程中，设定一定概率让融合(merge)不通过，这样对于同一个单词，也会出现不同的拆分过程。可以通过调整 <code>--dropout 0.1</code>这个参数为<code>apply-bpe</code>这个过程增加随机性。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/01/18/NLP%E4%B8%AD%E7%9A%84subword%E7%AE%97%E6%B3%95/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
 
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/10/06/%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%A2%9E%E9%87%8F%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="zhangjf">
+      <meta itemprop="description" content="Even night drunk with you for real.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="grovlyhop's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/10/06/%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%A2%9E%E9%87%8F%E5%AD%A6%E4%B9%A0/" class="post-title-link" itemprop="url">迁移学习与增量学习</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-10-06 00:00:00" itemprop="dateCreated datePublished" datetime="2018-10-06T00:00:00+08:00">2018-10-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/deep-learning/" itemprop="url" rel="index"><span itemprop="name">deep learning</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>1 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>最近在看一些增量学习的论文，在学习的过程中不免会遇到增量学习与迁移学习的相关概念的联系和区别，下面是个人的一些总结和理解，只是概念理解层面，没有深入到算法层面，若有不当之处还请留言交流指正。</p>
+<p>在传统分类任务中，为了保证训练得到的分类模型具有准确性和高可靠性，由两个基本假设:<br>1.学习的训练样本和新的测试样本满足独立同分布<br>2.必须有足够可用的训练样本</p>
+<h1 id="1-迁移学习"><a href="#1-迁移学习" class="headerlink" title="1. 迁移学习"></a>1. 迁移学习</h1><p>迁移学习是指用已存有的知识对不同但相关领域问题进行求解的一种机器学习方法。这里迁移学习放宽了上面的两个基本假设，我们可以迁移已有的知识来解决目标领域中仅有少量有标签样本数据甚至没有学习样本的问题。（当然了，目标领域样本量肯定是越多越好的）。当不同元素共享的因素越多，迁移学习就越容易，就好像你学会了骑自行车，可能就很容易学会骑摩托车，但是学会骑自行车再去骑三轮车，可能就会很不适应。（亲身经历，确实如此，三轮车每次拐弯的时候，可能时因为重心的位置与自行车不一样，总有一种要翻车的感觉，很容易失去平衡）</p>
+<h2 id="1-1-迁移学习与domain-adaptation-域适应"><a href="#1-1-迁移学习与domain-adaptation-域适应" class="headerlink" title="1.1 迁移学习与domain adaptation(域适应)"></a>1.1 迁移学习与domain adaptation(域适应)</h2><p>这里的域适应是迁移学习中最常见的问题之一，主要是域不同但任务相同，且源域数据有标签，目标域数据没有标签或者只有很少数据有标签。</p>
+<p><img src="/2018/10/06/%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%A2%9E%E9%87%8F%E5%AD%A6%E4%B9%A0/1.png"></p>
+<p>即域适应主要问题是如何减少源域与目标域不同分布之间的差异。</p>
+<p><img src="/2018/10/06/%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%A2%9E%E9%87%8F%E5%AD%A6%E4%B9%A0/2.png"></p>
+<p>上图为四个办公室用品分类数据集。均包含了显示器这一类，但是采集方式不同，标签都是相同的。 如何将域A上训练好的模型用在无标签或者少标签的域B上，是domain adaptation 主要研究的问题。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/10/06/%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0%E4%B8%8E%E5%A2%9E%E9%87%8F%E5%AD%A6%E4%B9%A0/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/05/03/Tensorflow%E7%9A%84contrib%E6%A8%A1%E5%9D%97%E5%9C%A8pycharm%E4%B8%8D%E8%83%BD%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="zhangjf">
+      <meta itemprop="description" content="Even night drunk with you for real.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="grovlyhop's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/05/03/Tensorflow%E7%9A%84contrib%E6%A8%A1%E5%9D%97%E5%9C%A8pycharm%E4%B8%8D%E8%83%BD%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" class="post-title-link" itemprop="url">Tensorflow的contrib模块在pycharm不能自动补全的解决方案</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-05-03 00:00:00" itemprop="dateCreated datePublished" datetime="2018-05-03T00:00:00+08:00">2018-05-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TensorFlow/" itemprop="url" rel="index"><span itemprop="name">TensorFlow</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>376</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>1 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>​​<br>在TensorFlow1.x版本中，有一个非常好用的模块-contrib库，它的官方解释如下:</p>
+<blockquote>
+<p>contrib module containing volatile or experimental code</p>
+</blockquote>
+<p>也就是说，所有的易于变动的，或者说实验性质的功能就放在这个模块里面,所以模块下面有着非常丰富的功能。然而，在日常写代码过程中，发现该模块在pycharm中不能自动补全。参考网络上的资料，发现很多人也遇到同样的问题但没有解决方案。自已捣鼓了一下，找对具体的解决方案，贴出来给有需要的人。</p>
+<p>存在的问题是:</p>
+<p><img src="/2018/05/03/Tensorflow%E7%9A%84contrib%E6%A8%A1%E5%9D%97%E5%9C%A8pycharm%E4%B8%8D%E8%83%BD%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/1.jpg"></p>
+<p>可以看出，在这里contrib里面的模块不能自动补全，写代码的时候挺麻烦的，但是在python控制台中就能自动补全。</p>
+<p>这里可以采用直接import contrib中具体的模块来解决这个问题。比如要用slim，可以这样</p>
+<p><img src="/2018/05/03/Tensorflow%E7%9A%84contrib%E6%A8%A1%E5%9D%97%E5%9C%A8pycharm%E4%B8%8D%E8%83%BD%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/2.jpg"></p>
+<p>通过这种方式可以顺利调用slim里面的模块啦！</p>
+
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/05/03/Tensorflow%E7%9A%84contrib%E6%A8%A1%E5%9D%97%E5%9C%A8pycharm%E4%B8%8D%E8%83%BD%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/03/24/ResNet%E8%83%8C%E5%90%8E%E7%9A%84%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="zhangjf">
+      <meta itemprop="description" content="Even night drunk with you for real.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="grovlyhop's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/03/24/ResNet%E8%83%8C%E5%90%8E%E7%9A%84%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">ResNet背后的原理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-03-24 00:00:00" itemprop="dateCreated datePublished" datetime="2018-03-24T00:00:00+08:00">2018-03-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/deep-learning/" itemprop="url" rel="index"><span itemprop="name">deep learning</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>2.3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>最近一段时间在准备校招面试，重新看了ResNet这篇神作以及网上的一些解读，不禁感慨凯明大神真的厉害。在这个过程中，对ResNet产生的背景和动机，以及衍生出来的解决方法有些不同的理解，在这篇文章整理和记录一下。</p>
+<h1 id="1-提出的背景"><a href="#1-提出的背景" class="headerlink" title="1. 提出的背景"></a>1. 提出的背景</h1><p>在传统机器学习模型往深度模型演进的时代，我们通常认为，网络的深度决定了网络的性能。这个观点非常容易理解，深度模型也看做是拥有大量参数的黑盒模型，用来拟合大量的数据。模型深度越深，参数量越多，对数据的拟合能力就越强，那在测试集上表现的性能也就越好。从LeNet-&gt;AlexNet-&gt;VGG这些网络的发展来看，这个结论似乎是正确的，网络越深，性能也越好。</p>
+<p>但随着GPU算力大幅度的提升，网络设计越来越深，但是实验数据发现，更深的网络没能带来更好的性能，反而表现出更高的误差:</p>
+<p><img src="/2018/03/24/ResNet%E8%83%8C%E5%90%8E%E7%9A%84%E5%8E%9F%E7%90%86/1.jpg"></p>
+<p>从这个实验结果图可以看出，在迭代次数足够多的情况下，56层的网络比20层的网络具有更高的training error和test error。照理deeper is better的理论来说，20层的网络是56层网络的子网络，也就是说56层网络的解空间包含了20层网络，性能应该是≥20层网络的，但事实却相反。不断加深的网络结构，往往会导致各种问题:</p>
+<ol>
+<li>梯度消失、梯度爆炸问题。网络误差的传递是一个链式法则，当层数越深的时候，梯度将以指数形式传播。随着网络层数的加深，梯度消失和梯度爆炸的问题会变得越来越明显</li>
+<li>过拟合问题。随着网络层数的加深，参数变多，神经网络的拟合能力变得很强，这也就意味着其表达出来的函数会更复杂。拟合能力更强的网络在测试集上的表现反而更差</li>
+<li>退化问题。随着网络层数的增加，会出现退化问题。该问题的本质是网络深度的加深会导致更复杂的待学习曲线(严重非凸)，SGD等优化算法对网络权重的优化变得更加困难，进而无法找到最优解。</li>
+</ol>
+<p>前两个问题已经存在各种各样的解法，ResNet中的Residual(残差)结构主要是为了解决退化问题，这就是ResNet提出的背景意义</p>
+<h1 id="2-怎么解决退化问题"><a href="#2-怎么解决退化问题" class="headerlink" title="2. 怎么解决退化问题"></a>2. 怎么解决退化问题</h1><p>上一节提到ResNet通过提出残差结构来解决网络变深导致的退化问题，从而通过提升网络的深度来提升整体模型的性能。那这一节主要分析下残差结构为什么能解决退化问题。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2018/03/24/ResNet%E8%83%8C%E5%90%8E%E7%9A%84%E5%8E%9F%E7%90%86/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/06/12/%E5%8D%B7%E7%A7%AF%E6%A0%B8%E7%9A%84%E5%B0%BA%E5%AF%B8%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="zhangjf">
+      <meta itemprop="description" content="Even night drunk with you for real.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="grovlyhop's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/06/12/%E5%8D%B7%E7%A7%AF%E6%A0%B8%E7%9A%84%E5%B0%BA%E5%AF%B8%E9%97%AE%E9%A2%98/" class="post-title-link" itemprop="url">卷积核的尺寸问题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2017-06-12 00:00:00" itemprop="dateCreated datePublished" datetime="2017-06-12T00:00:00+08:00">2017-06-12</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/deep-learning/" itemprop="url" rel="index"><span itemprop="name">deep learning</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>445</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>1 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>类似的问题有:</p>
+<ol>
+<li>为什么VGG要用3*3的卷积核？</li>
+<li>为什么ResNet除了最开始用大卷积核降低维度以外，后面的残差结构都用3*3的卷积核?</li>
+<li>3*3的卷积核有什么优势?</li>
+</ol>
+<p>这里总结一下，为什么当前的深度网络大多用的是3*3的卷积核？</p>
+<ol>
+<li>3*3是最小的能够捕获像素八邻域信息的尺寸</li>
+<li>两个3*3的堆叠卷基层的有限感受野是5*5；三个3*3的堆叠卷基层的感受野是7*7，故可以通过小尺寸卷积层的堆叠替代大尺寸卷积层，并且感受野大小不变</li>
+<li>多个3*3的卷基层比一个大尺寸filter卷基层有更多的非线性(更多层的非线性函数)，使得激活函数更加具有非线性</li>
+<li>多个3*3的卷积层比一个大尺寸的filter有更少的参数。假设卷基层的输入和输出的特征图大小相同为C，那么三个3*3的卷积层参数个数3x(3*3*C*C)=27C<sup>2</sup>；一个7x7的卷积层参数为49C<sup>2</sup>；所以可以把三个3*3的filter看成是一个7*7filter的分解(中间层有非线性的分解, 并且起到隐式正则化的作用)</li>
+</ol>
+<p>总的来说，从参数量、感受野、非线性变换几个角度来考虑</p>
+
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/06/12/%E5%8D%B7%E7%A7%AF%E6%A0%B8%E7%9A%84%E5%B0%BA%E5%AF%B8%E9%97%AE%E9%A2%98/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -558,14 +829,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -615,14 +886,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-      <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">6k</span>
+    <span title="Symbols count total">14k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-      <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">6 mins.</span>
+    <span title="Reading time total">13 mins.</span>
 </div>
 
         
