@@ -159,6 +159,191 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/15/%E5%AF%B9%E8%AF%9D%E6%96%87%E6%9C%AC%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="zhangjf">
+      <meta itemprop="description" content="Even night drunk with you for real.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="grovlyhop's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/15/%E5%AF%B9%E8%AF%9D%E6%96%87%E6%9C%AC%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/" class="post-title-link" itemprop="url">对话文本聚类算法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-10-15 11:38:38" itemprop="dateCreated datePublished" datetime="2021-10-15T11:38:38+08:00">2021-10-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Nature-Language-Processing/" itemprop="url" rel="index"><span itemprop="name">Nature Language Processing</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>3.3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>3 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="1-背景介绍"><a href="#1-背景介绍" class="headerlink" title="1. 背景介绍"></a>1. 背景介绍</h1><p>聚类算法是常用的无监督学习方法，是能够在没有或者缺少先验知识的情况下挖掘到隐藏数据结构与知识的有效手段。它的概念是：将相似的对象归到同一个簇中，使得同一个簇内的数据对象的相似性尽可能大，同时不在同一个簇中的数据对象的差异性也尽可能地大。对话文本是指如语音&amp;文本对话这种多轮交互式的对话语料，如群聊对话等场景。对话文本聚类就是聚类算法在对话语料方向上的应用，首先将对话文本的自然语言转换成向量等数学信息，形成高维空间点之后再去利用各种距离度量方式计算点与点之间的距离，将距离比较近的文本聚成一个簇。使得相同簇中文本都是表达相近的意图，不同簇中文本表达不同的意图。</p>
+<p><img src="/2021/10/15/%E5%AF%B9%E8%AF%9D%E6%96%87%E6%9C%AC%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/001.png"></p>
+<p>对话文本聚类可以帮助我们在庞大语料库中挖掘出有价值的内容，如用户意图话术、客服意图话术以及它们之间的对应关系。这些挖掘出来的文本可以用来扩充相对应的对话机器人，丰富对话机器人的话术与意图使其应答更加流畅、更加智能。也可以用作对话机器人添加新场景时，冷启动寻找新意图与话术的手段。甚至还可以辅助业务同学进行文本标注。</p>
+<p>目前主流的文本聚类算法基本单一类型的算法，这类算法对对话文本向量的聚类效果总是不尽人意。具体表现为：</p>
+<ol>
+<li>聚类出的语料质量低，掺杂度高。</li>
+<li>对话样本中出现频次较少的意图容易被忽略，这类小意图文本会散布在多个簇中或者直接被聚类算法视为噪声点，很难单独成簇。这给我们寻找小意图话术带来了巨大困难。</li>
+</ol>
+<h1 id="2-文本单一聚类算法"><a href="#2-文本单一聚类算法" class="headerlink" title="2. 文本单一聚类算法"></a>2. 文本单一聚类算法</h1><p>各种聚类算法由于其实现原理不同，在处理不同分布类型的数据时，会产生不同的聚类结果。下图是sklearn中常用的10种聚类算法在6种不同分布类型的二维空间样本上的聚类结果，图中每一行代表不同分布类型的数据，每一列代表不同聚类算法，聚类结果中不同颜色代表不同的簇。</p>
+<p><img src="/2021/10/15/%E5%AF%B9%E8%AF%9D%E6%96%87%E6%9C%AC%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/002.png"></p>
+<p>从上图可以看到单一聚类算法在处理分布类型不同的数据会产生差异化的聚类结果。换句话说，单一的聚类算法并不能完美处理任何类型的数据样本。而word-embedding后的文本向量，是一种高维复杂的数据，并且样本在向量空间中的复杂程度会随着维度增加急剧提升，导致向量空间拥有多种甚至互相参杂的数据分布类型。这是单一聚类算法在高维向量中聚类效果不佳的根本原因。<br>针对这一问题，我们设计了一种基于两阶段的聚类算法。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/10/15/%E5%AF%B9%E8%AF%9D%E6%96%87%E6%9C%AC%E8%81%9A%E7%B1%BB%E7%AE%97%E6%B3%95/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn-Hans">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/03/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E4%B8%AD%E7%9A%84Anchor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="zhangjf">
+      <meta itemprop="description" content="Even night drunk with you for real.">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="grovlyhop's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/03/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E4%B8%AD%E7%9A%84Anchor/" class="post-title-link" itemprop="url">目标检测中的Anchor</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-07-03 18:26:45" itemprop="dateCreated datePublished" datetime="2021-07-03T18:26:45+08:00">2021-07-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-08-07 13:46:29" itemprop="dateModified" datetime="2021-08-07T13:46:29+08:00">2021-08-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/computer-vision/" itemprop="url" rel="index"><span itemprop="name">computer vision</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>0</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>1 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="cn-Hans">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/03/26/wide&deep/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -829,20 +1014,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -886,12 +1071,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="Symbols count total">14k</span>
+    <span title="Symbols count total">17k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="Reading time total">13 mins.</span>
+    <span title="Reading time total">16 mins.</span>
 </div>
 
         
